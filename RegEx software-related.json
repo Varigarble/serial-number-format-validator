@@ -1,25 +1,10 @@
-
-
-# Autodesk s/n format validator:
-(\b(\d{3}-\d{8}\b))
-
-# sample Python script:
-
-import re
-
-auto_test = "check these: 555-12345678, 47t-87654321, 6669-69696969, 212-32342452"
-
-auto_ex = re.compile(r'(\b(\d{3}-\d{8}\b))')
-
-result_1 = str(auto_ex.findall(auto_test))
-result_2 = str(auto_ex.search(auto_test))
-result_3 = str(auto_ex.match(auto_test))
-result_4 = str(auto_ex.fullmatch(auto_test))
-
-print(result_1, '\n', result_2, '\n', result_3, '\n', result_4)
-
-
-
-#Adobe s/n format validator:
-(\b(\d{4}-){5}\d{4}\b)
-
+[
+	{
+		"Vendor": "Autodesk",
+		"regex_sn":"(\b(\d{3}-\d{8}\b))"
+	}
+	{
+		"Vendor": "Adobe",
+		"regex_sn": "(\b(\d{4}-){5}\d{4}\b)"
+	}
+]
