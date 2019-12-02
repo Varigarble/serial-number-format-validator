@@ -24,26 +24,69 @@ auto_test = "check these: 555-12345678, 47t-87654321, 6669-69696969, 212-3234245
 
 auto_ex = re.compile(r'(\b(\d{3}-\d{8}\b))')
 
-result_1 = str(auto_ex.findall(auto_test))
-result_2 = str(auto_ex.search(auto_test))
-result_3 = str(auto_ex.match(auto_test))
-result_4 = str(auto_ex.fullmatch(auto_test))
+result_1 = (re.findall(auto_ex, auto_test))
+result_2 = (re.search(auto_ex, auto_test))
+result_3 = (re.match(auto_ex, auto_test))
+result_4 = (re.fullmatch(auto_ex, auto_test))
 
 print(result_1, '\n', result_2, '\n', result_3, '\n', result_4)
 
 # Select from software company: Antidex, Abalobadiah, or None (input prompt for testing,
-    # TODO: as drop-down menu in browser)
+# TODO: as drop-down menu in browser)
 
-# try
-soft_vend_in = ["Antidex", "Abalobadaiah"]
-    # input("Enter one of the following two vendors: Antidex, Abalobadaiah, or None: ")
-# except
-# Take user input of s/n
-sn_in = ["666-69696969", "1111-2222-3333-4444-5555-6666"]
-    # input("Enter your serial number: ")
+'''While loop with user and pre-determined exits as a decorator function'''
+def entering_func(inputly):
+    done = "No"
+    max_entries = 13
+    while done.upper()[0] != "Y":
+        inputly()
+        max_entries -= 1
+        if max_entries <= 0:
+            print("I can't take anymore!")
+            done = 'Y'
+        # elif local index is out of range, exit loop
+        else:
+            done = input("Are you done making entries (y/n)? ")
+
+software_vendors = []
+
+@entering_func
+def soft_vend_enter():
+    global software_vendors
+    software_vendors.append(input("Enter one of the following two vendors: Antidex, Abalobadiah, or None: "))
+
+print(software_vendors)
+
+# initialize list of same length as no. of software vendors entered
+serials = [None for x in range(len(software_vendors))]
+i = 0  # starting index to replace values in lists
+
+@entering_func
+def sn_enter():
+    global serials
+    global i
+    j = len(serials)
+    if i < j:
+        serials[i] = (input("Enter a serial number: "))
+        i += 1
+    # else:
+    #     return 'stop'
+print(serials)
 
 # if Antidex or Abalobadiah, s/n must match regex
-pk_in = ["06EY5", None]
+pk_in = [None for x in range(len(software_vendors))]
+i = 0
+
+@entering_func
+def pk_enter():
+    global pk_in
+    global i
+    j = len(pk_in)
+    if i < j:
+        pk_in[i] = (input("Enter a product key: "))
+        i += 1
+
+print(pk_in)
     # input("Enter your Product Key: ")
 # if Antidex, also take user input of Prod. Key, must match regex
 # if None, no format checks
@@ -53,9 +96,9 @@ with open("sam_records.csv", "w") as sr:
     csv_writer = csv.DictWriter(sr, fieldnames=headers)
     csv_writer.writeheader()
     i = 0
-    for vendor in soft_vend_in:
+    for vendor in software_vendors:
         csv_writer.writerow({
-            "Software Vendor": soft_vend_in[i],
-            "s/n": sn_in[i],
+            "Software Vendor": software_vendors[i],
+            "s/n": serials[i],
             "Product Key": pk_in[i]})
         i += 1
