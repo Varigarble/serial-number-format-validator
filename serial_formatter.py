@@ -65,12 +65,12 @@ i = 0  # starting index to replace values in lists
 def sn_enter():
     global serials
     global i
+    global max_entries
     j = len(serials)
     if i < j:
         serials[i] = (input("Enter a serial number: "))
         i += 1
-    # else:
-    #     return 'stop'
+
 print(serials)
 
 # if Antidex or Abalobadiah, s/n must match regex

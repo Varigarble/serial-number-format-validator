@@ -3,6 +3,9 @@
 # Autodesk s/n format validator:
 (\b(\d{3}-\d{8}\b))
 
+#  Autodesk Product Key format?
+(\w|\d)\d(\w|\d)\w\d
+
 # sample Python script:
 
 import re
