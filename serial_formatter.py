@@ -22,10 +22,10 @@ import sqlite3
 
 auto_test = "check these: 555-12345678, 47t-87654321, 6669-69696969, 212-32342452"
 
-auto_ex = re.compile(r'(\b(\d{3}-\d{8}\b))')
+auto_ex = re.compile(r'\b(\d{3}-\d{8}\b)')
 
 result_1 = (re.findall(auto_ex, auto_test))
-result_2 = (re.search(auto_ex, auto_test))
+result_2 = (re.search(auto_ex, auto_test).group(1))
 result_3 = (re.match(auto_ex, auto_test))
 result_4 = (re.fullmatch(auto_ex, auto_test))
 
@@ -34,19 +34,23 @@ print(result_1, '\n', result_2, '\n', result_3, '\n', result_4)
 # Select from software company: Antidex, Abalobadiah, or None (input prompt for testing,
 # TODO: as drop-down menu in browser)
 
-'''While loop with user and pre-determined exits as a decorator function'''
+
 def entering_func(inputly):
+    '''While loop with user and pre-determined exits as a decorator function'''
     done = "No"
-    max_entries = 13
+    if len(software_vendors) == 0:
+        max_entries = 13
+    else:
+        max_entries = len(software_vendors)
     while done.upper()[0] != "Y":
         inputly()
-        max_entries -= 1
-        if max_entries <= 0:
+        if max_entries <= 1:
             print("I can't take anymore!")
             done = 'Y'
         # elif local index is out of range, exit loop
         else:
             done = input("Are you done making entries (y/n)? ")
+            max_entries -= 1
 
 software_vendors = []
 
@@ -68,7 +72,7 @@ def sn_enter():
     global max_entries
     j = len(serials)
     if i < j:
-        serials[i] = (input("Enter a serial number: "))
+        serials[i] = (input(f"Enter a serial number for {software_vendors[i]}: "))
         i += 1
 
 print(serials)
@@ -83,7 +87,7 @@ def pk_enter():
     global i
     j = len(pk_in)
     if i < j:
-        pk_in[i] = (input("Enter a product key: "))
+        pk_in[i] = (input(f"Enter a product key for {software_vendors[i]}, s/n: {serials[i]}: "))
         i += 1
 
 print(pk_in)
