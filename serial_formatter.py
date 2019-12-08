@@ -57,7 +57,10 @@ software_vendors = []
 @entering_func
 def soft_vend_enter():
     global software_vendors
-    software_vendors.append(input("Enter one of the following two vendors: Antidex, Abalobadiah, or None: "))
+    vend_name = input("Enter one of the following two vendors: Antidex, Abalobadiah, or None: ")
+    vend_amount = int(input(f"How many licenses do you have for {vend_name}? "))
+    for amnt in range(vend_amount):
+        software_vendors.append(vend_name)
 
 print(software_vendors)
 
