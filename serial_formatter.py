@@ -74,7 +74,9 @@ def sn_enter():
     if i < j:
         serials[i] = (input(f"Enter a serial number for {software_vendors[i]}: "))
         i += 1
-
+    # for i in range(len(serials)):
+    #      serials[i] = (input(f"Enter a serial number for {software_vendors[i]}: "))
+    #      serials.append(sn_entered)
 print(serials)
 
 # if Antidex or Abalobadiah, s/n must match regex
