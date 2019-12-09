@@ -73,13 +73,14 @@ def sn_enter():
     global serials
     global i
     global max_entries
-    j = len(serials)
-    if i < j:
+    if i < len(serials):
         serials[i] = (input(f"Enter a serial number for {software_vendors[i]}: "))
         i += 1
-    # for i in range(len(serials)):
-    #      serials[i] = (input(f"Enter a serial number for {software_vendors[i]}: "))
-    #      serials.append(sn_entered)
+    # for i in serials:
+    #     j = str(input(f"Enter a serial number for {software_vendors[i]}: "))
+    #     serials[i] = j
+    # serials[i] = [(input(f"Enter a serial number for {software_vendors[i]}: ")) for x in serials]
+
 print(serials)
 
 # if Antidex or Abalobadiah, s/n must match regex
