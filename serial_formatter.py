@@ -18,22 +18,13 @@ import sqlite3
 
 '''
 
-
-
-auto_test = "check these: 555-12345678, 47t-87654321, 6669-69696969, 212-32342452"
-
+#  RegEx search strings for certain software companies
 auto_ex = re.compile(r'\b(\d{3}-\d{8}\b)')
-
-result_1 = (re.findall(auto_ex, auto_test))
-result_2 = (re.search(auto_ex, auto_test).group(1))
-result_3 = (re.match(auto_ex, auto_test))
-result_4 = (re.fullmatch(auto_ex, auto_test))
-
-print(result_1, '\n', result_2, '\n', result_3, '\n', result_4)
+auto_key = re.compile(r'([a-zA-Z]|\d)\d([a-zA-Z]|\d)[a-zA-Z]\d')
+abalo_ex = re.compile(r'(\b(\d{4}-){5}\d{4}\b)')
 
 # Select from software company: Antidex, Abalobadiah, or None (input prompt for testing,
 # TODO: as drop-down menu in browser)
-
 
 def entering_func(inputly):
     '''While loop with user and pre-determined exits as a decorator function'''
@@ -75,15 +66,17 @@ def sn_enter():
     global max_entries
     if i < len(serials):
         serials[i] = (input(f"Enter a serial number for {software_vendors[i]}: "))
+        # if Antidex or Abalobadiah, s/n must match regex
+        if software_vendors[i] == 'Antidex':
+            while not re.match(auto_ex, serials[i]):
+                serials[i] = (input(f"That is not a valid serial number for Antidex: "))
+        if software_vendors[i] == 'Abalobadiah':
+            while not re.match(abalo_ex, serials[i]):
+                serials[i] = (input(f"That is not a valid serial number for Abalobadiah: "))
         i += 1
-    # for i in serials:
-    #     j = str(input(f"Enter a serial number for {software_vendors[i]}: "))
-    #     serials[i] = j
-    # serials[i] = [(input(f"Enter a serial number for {software_vendors[i]}: ")) for x in serials]
 
 print(serials)
 
-# if Antidex or Abalobadiah, s/n must match regex
 pk_in = [None for x in range(len(software_vendors))]
 i = 0
 
@@ -91,17 +84,17 @@ i = 0
 def pk_enter():
     global pk_in
     global i
-    j = len(pk_in)
-    if i < j:
+    if i < len(pk_in):
         pk_in[i] = (input(f"Enter a product key for {software_vendors[i]}, s/n: {serials[i]}: "))
+        if software_vendors[i] == 'Antidex':
+            while not re.match(auto_key, pk_in[i]):
+                pk_in[i] = (input(f"That is not a valid product key for Antidex: "))
         i += 1
 
 print(pk_in)
-    # input("Enter your Product Key: ")
-# if Antidex, also take user input of Prod. Key, must match regex
-# if None, no format checks
+
 # write to csv
-with open("sam_records.csv", "w") as sr:
+with open("sam_records.csv", "w", newline='') as sr:
     headers = ["Software Vendor", "s/n", "Product Key"]
     csv_writer = csv.DictWriter(sr, fieldnames=headers)
     csv_writer.writeheader()
@@ -112,3 +105,4 @@ with open("sam_records.csv", "w") as sr:
             "s/n": serials[i],
             "Product Key": pk_in[i]})
         i += 1
+
