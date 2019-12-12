@@ -94,9 +94,9 @@ def pk_enter():
 print(pk_in)
 
 # write to csv
-with open("sam_records.csv", "w", newline='') as sr:
+with open("sam_records.csv", "w", newline='') as sr_csv:
     headers = ["Software Vendor", "s/n", "Product Key"]
-    csv_writer = csv.DictWriter(sr, fieldnames=headers)
+    csv_writer = csv.DictWriter(sr_csv, fieldnames=headers)
     csv_writer.writeheader()
     i = 0
     for vendor in software_vendors:
@@ -106,3 +106,13 @@ with open("sam_records.csv", "w", newline='') as sr:
             "Product Key": pk_in[i]})
         i += 1
 
+#write to JSON
+json_dict = ({
+        "Software Vendor": software_vendors,
+        "s/n": serials,
+        "Product Key": pk_in
+    })
+print(json_dict)
+sr_json = open("D:\GitHub\serial-number-format-validator\sam_records.json", "w", encoding="utf-8")
+json.dump(json_dict, sr_json, ensure_ascii = False, indent=4, separators=(',', ': '))
+sr_json.close()
