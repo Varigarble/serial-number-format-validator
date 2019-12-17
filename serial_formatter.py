@@ -2,8 +2,6 @@ import json
 import re
 import csv
 import sqlite3
-# conn = sqlite3.connect("name.db")
-# conn.close() at end of file
 
 '''This project will attempt to do the following:
     1) Write user-input RegEx to json file via API (browser?)
@@ -106,7 +104,7 @@ with open("sam_records.csv", "w", newline='') as sr_csv:
             "Product Key": pk_in[i]})
         i += 1
 
-#write to JSON
+# write to JSON
 json_dict = ({
         "Software Vendor": software_vendors,
         "s/n": serials,
@@ -116,3 +114,12 @@ print(json_dict)
 sr_json = open("D:\GitHub\serial-number-format-validator\sam_records.json", "w", encoding="utf-8")
 json.dump(json_dict, sr_json, ensure_ascii = False, indent=4, separators=(',', ': '))
 sr_json.close()
+
+# write to sqlite3 db
+conn = sqlite3.connect("sam_records.db")
+c = conn.cursor()
+c.execute("CREATE TABLE Antidex (s/n TEXT, Product Key Text) \
+    CREATE TABLE Abalobadiah (s/n TEXT, Product Key Text) \
+    CREATE TABLE None (Software Vendor TEXT, s/n TEXT, Product Key Text);")
+conn.commit()
+conn.close()
