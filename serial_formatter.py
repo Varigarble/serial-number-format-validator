@@ -91,35 +91,48 @@ def pk_enter():
 
 print(pk_in)
 
-# write to csv
-with open("sam_records.csv", "w", newline='') as sr_csv:
-    headers = ["Software Vendor", "s/n", "Product Key"]
-    csv_writer = csv.DictWriter(sr_csv, fieldnames=headers)
-    csv_writer.writeheader()
-    i = 0
-    for vendor in software_vendors:
-        csv_writer.writerow({
-            "Software Vendor": software_vendors[i],
-            "s/n": serials[i],
-            "Product Key": pk_in[i]})
-        i += 1
+# # write to csv
+# with open("sam_records.csv", "w", newline='') as sr_csv:
+#     headers = ["Software Vendor", "s/n", "Product Key"]
+#     csv_writer = csv.DictWriter(sr_csv, fieldnames=headers)
+#     csv_writer.writeheader()
+#     i = 0
+#     for vendor in software_vendors:
+#         csv_writer.writerow({
+#             "Software Vendor": software_vendors[i],
+#             "s/n": serials[i],
+#             "Product Key": pk_in[i]})
+#         i += 1
 
-# write to JSON
-json_dict = ({
-        "Software Vendor": software_vendors,
-        "s/n": serials,
-        "Product Key": pk_in
-    })
-print(json_dict)
-sr_json = open("D:\GitHub\serial-number-format-validator\sam_records.json", "w", encoding="utf-8")
-json.dump(json_dict, sr_json, ensure_ascii = False, indent=4, separators=(',', ': '))
-sr_json.close()
+# # write to JSON
+# json_dict = ({
+#         "Software Vendor": software_vendors,
+#         "s/n": serials,
+#         "Product Key": pk_in
+#     })
+# print(json_dict)
+# sr_json = open("D:\GitHub\serial-number-format-validator\sam_records.json", "w", encoding="utf-8")
+# json.dump(json_dict, sr_json, ensure_ascii = False, indent=4, separators=(',', ': '))
+# sr_json.close()
 
 # write to sqlite3 db
-conn = sqlite3.connect("sam_records.db")
+
+# created sam_records.db and tables for each vendor
+# c.execute('''CREATE TABLE Antidex (s_n TEXT, Product Key Text);''')
+# c.execute('''CREATE TABLE Abalobadiah (s_n TEXT, Product Key Text);''')
+# c.execute('''CREATE TABLE None (s_n TEXT, Product Key Text);''')
+
+# prepare separate lists of tuples for separate database tables
+all_licenses = list(zip(software_vendors, serials, pk_in))
+anti_licenses = [license for license in all_licenses if all_licenses[0] == 'Antidex']
+abalo_licenses = [license for license in all_licenses if all_licenses[0] == 'Abalobadiah']
+none_licenses = [license for license in all_licenses if all_licenses[0] != ('Antidex' or 'Abalobadiah')]
+
+conn = sqlite3.connect(":memory:")
 c = conn.cursor()
-c.execute("CREATE TABLE Antidex (s/n TEXT, Product Key Text) \
-    CREATE TABLE Abalobadiah (s/n TEXT, Product Key Text) \
-    CREATE TABLE None (Software Vendor TEXT, s/n TEXT, Product Key Text);")
+# TODO: for loop makes table for each vendor entered
+c.execute('''CREATE TABLE Antidex (s_n TEXT, Product Key Text);''')
+c.execute('''CREATE TABLE Abalobadiah (s_n TEXT, Product Key Text);''')
+c.execute('''CREATE TABLE None (s_n TEXT, Product Key Text);''')
 conn.commit()
 conn.close()
