@@ -124,9 +124,9 @@ print(pk_in)
 
 # prepare separate lists of tuples for separate database tables
 all_licenses = list(zip(software_vendors, serials, pk_in))
-anti_licenses = [license[1:3] for license in all_licenses if all_licenses[0][0] == 'Antidex']
-abalo_licenses = [license[1:3] for license in all_licenses if all_licenses[0][0] == 'Abalobadiah']
-none_licenses = [license[1:3] for license in all_licenses if (all_licenses[0][0] != 'Antidex' and all_licenses[0][0] != 'Abalobadiah')]
+anti_licenses = [license[1:3] for license in all_licenses if license[0] == 'Antidex']
+abalo_licenses = [license[1:3] for license in all_licenses if license[0] == 'Abalobadiah']
+none_licenses = [license[1:3] for license in all_licenses if (license[0] != 'Antidex' and license[0] != 'Abalobadiah')]
 print('all: ', all_licenses)
 print('anti: ', anti_licenses)
 print('abalo: ', abalo_licenses)
@@ -144,12 +144,12 @@ c.executemany("INSERT INTO Antidex VALUES (?,?)", anti_licenses)
 c.executemany("INSERT INTO Abalobadiah VALUES (?,?)", abalo_licenses)
 c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
 
-for row in c.execute("SELECT * FROM Antidex"):
-    print(row)
-for row in c.execute("SELECT * FROM Abalobadiah"):
-    print(row)
-for row in c.execute("SELECT * FROM None"):
-    print(row)
+c.execute("SELECT * FROM Antidex")
+print('Antidex: ', c.fetchall())
+c.execute("SELECT * FROM Abalobadiah")
+print('Abalobadiah: ', c.fetchall())
+c.execute("SELECT * FROM None")
+print('None: ', c.fetchall())
 
 conn.close()
 
