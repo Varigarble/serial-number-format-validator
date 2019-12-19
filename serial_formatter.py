@@ -124,11 +124,13 @@ print(pk_in)
 
 # prepare separate lists of tuples for separate database tables
 all_licenses = list(zip(software_vendors, serials, pk_in))
-anti_licenses = [license[1:3] for license in all_licenses if all_licenses[0] == 'Antidex']
-abalo_licenses = [license[1:3] for license in all_licenses if all_licenses[0] == 'Abalobadiah']
-none_licenses = [license[1:3] for license in all_licenses if all_licenses[0] != ('Antidex' or 'Abalobadiah')]
+anti_licenses = [license[1:3] for license in all_licenses if all_licenses[0][0] == 'Antidex']
+abalo_licenses = [license[1:3] for license in all_licenses if all_licenses[0][0] == 'Abalobadiah']
+none_licenses = [license[1:3] for license in all_licenses if (all_licenses[0][0] != 'Antidex' and all_licenses[0][0] != 'Abalobadiah')]
 print('all: ', all_licenses)
-print('some: ', anti_licenses, abalo_licenses, none_licenses)
+print('anti: ', anti_licenses)
+print('abalo: ', abalo_licenses)
+print('none: ', none_licenses)
 
 conn = sqlite3.connect(":memory:")
 c = conn.cursor()
@@ -137,16 +139,17 @@ c.execute("CREATE TABLE Antidex (s_n TEXT, Product Key Text);")
 c.execute("CREATE TABLE Abalobadiah (s_n TEXT, Product Key Text);")
 c.execute("CREATE TABLE None (s_n TEXT, Product Key Text);")
 conn.commit()
-with conn:
-    for license in anti_licenses:
-        c.execute("INSERT INTO Antidex VALUES (?,?)", license)
-    for license in abalo_licenses:
-        c.execute("INSERT INTO Antidex VALUES (?,?)", license)
-    for license in none_licenses:
-        c.execute("INSERT INTO Antidex VALUES (?,?)", license)
 
-c.execute("SELECT * FROM None").fetchall()
-conn.commit()
-print(c.fetchall())
+c.executemany("INSERT INTO Antidex VALUES (?,?)", anti_licenses)
+c.executemany("INSERT INTO Abalobadiah VALUES (?,?)", abalo_licenses)
+c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
+
+for row in c.execute("SELECT * FROM Antidex"):
+    print(row)
+for row in c.execute("SELECT * FROM Abalobadiah"):
+    print(row)
+for row in c.execute("SELECT * FROM None"):
+    print(row)
+
 conn.close()
 
