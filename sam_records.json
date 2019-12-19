@@ -2,28 +2,25 @@
     "Software Vendor": [
         "Antidex",
         "Antidex",
+        "Antidex",
         "Abalobadiah",
         "Abalobadiah",
-        "Abalobadiah",
-        "Pretend Vend",
-        "Pretend Vend"
+        "company 3"
     ],
     "s/n": [
-        "555-87654321",
         "666-69696969",
+        "123-12345678",
+        "666-87654321",
         "1111-2222-3333-4444-5555-6666",
-        "9999-8888-7777-6666-5555-4444",
-        "1234-2345-3456-4567-5678-6789",
-        "/\\/\\@61C!",
-        "\\/nicorns"
+        null,
+        null
     ],
     "Product Key": [
-        "E6EE6",
-        "69VV9",
-        "%$",
-        "ABAKEY",
-        "huh",
-        "quagga",
-        "zebra"
+        "999o9",
+        "224A4",
+        "222q2",
+        "asldkfj;als",
+        "465",
+        "cokey3"
     ]
 }

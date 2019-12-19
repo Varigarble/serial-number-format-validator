@@ -124,15 +124,29 @@ print(pk_in)
 
 # prepare separate lists of tuples for separate database tables
 all_licenses = list(zip(software_vendors, serials, pk_in))
-anti_licenses = [license for license in all_licenses if all_licenses[0] == 'Antidex']
-abalo_licenses = [license for license in all_licenses if all_licenses[0] == 'Abalobadiah']
-none_licenses = [license for license in all_licenses if all_licenses[0] != ('Antidex' or 'Abalobadiah')]
+anti_licenses = [license[1:3] for license in all_licenses if all_licenses[0] == 'Antidex']
+abalo_licenses = [license[1:3] for license in all_licenses if all_licenses[0] == 'Abalobadiah']
+none_licenses = [license[1:3] for license in all_licenses if all_licenses[0] != ('Antidex' or 'Abalobadiah')]
+print('all: ', all_licenses)
+print('some: ', anti_licenses, abalo_licenses, none_licenses)
 
 conn = sqlite3.connect(":memory:")
 c = conn.cursor()
-# TODO: for loop makes table for each vendor entered
-c.execute('''CREATE TABLE Antidex (s_n TEXT, Product Key Text);''')
-c.execute('''CREATE TABLE Abalobadiah (s_n TEXT, Product Key Text);''')
-c.execute('''CREATE TABLE None (s_n TEXT, Product Key Text);''')
+# for loop makes table for each vendor entered
+c.execute("CREATE TABLE Antidex (s_n TEXT, Product Key Text);")
+c.execute("CREATE TABLE Abalobadiah (s_n TEXT, Product Key Text);")
+c.execute("CREATE TABLE None (s_n TEXT, Product Key Text);")
 conn.commit()
+with conn:
+    for license in anti_licenses:
+        c.execute("INSERT INTO Antidex VALUES (?,?)", license)
+    for license in abalo_licenses:
+        c.execute("INSERT INTO Antidex VALUES (?,?)", license)
+    for license in none_licenses:
+        c.execute("INSERT INTO Antidex VALUES (?,?)", license)
+
+c.execute("SELECT * FROM None").fetchall()
+conn.commit()
+print(c.fetchall())
 conn.close()
+
