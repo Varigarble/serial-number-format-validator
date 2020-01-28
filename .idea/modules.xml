@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/serial-number-format-validator.iml" filepath="$PROJECT_DIR$/.idea/serial-number-format-validator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../text-chess-piece-moves/.idea/text-chess-piece-moves.iml" filepath="$PROJECT_DIR$/../text-chess-piece-moves/.idea/text-chess-piece-moves.iml" />
     </modules>
   </component>
 </project>

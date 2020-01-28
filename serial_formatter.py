@@ -2,6 +2,7 @@ import json
 import re
 import csv
 import sqlite3
+from sqlite3 import Error
 
 '''This project will attempt to do the following:
     1) Write user-input RegEx to json file via API (browser?)
@@ -92,6 +93,7 @@ def pk_enter():
 print(pk_in)
 
 # # write to csv
+# TODO: make separate .py file, write csv from db
 # with open("sam_records.csv", "w", newline='') as sr_csv:
 #     headers = ["Software Vendor", "s/n", "Product Key"]
 #     csv_writer = csv.DictWriter(sr_csv, fieldnames=headers)
@@ -105,6 +107,7 @@ print(pk_in)
 #         i += 1
 
 # # write to JSON
+# TODO: make separate .py file, write JSON from db
 # json_dict = ({
 #         "Software Vendor": software_vendors,
 #         "s/n": serials,
@@ -118,9 +121,9 @@ print(pk_in)
 # write to sqlite3 db
 
 # created sam_records.db and tables for each vendor
-# c.execute('''CREATE TABLE Antidex (s_n TEXT, Product Key Text);''')
-# c.execute('''CREATE TABLE Abalobadiah (s_n TEXT, Product Key Text);''')
-# c.execute('''CREATE TABLE None (s_n TEXT, Product Key Text);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS Antidex (s_n TEXT, Product Key TEXT);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS Abalobadiah (s_n TEXT, Product Key TEXT);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS None (s_n TEXT, Product Key TEXT);''')
 
 # prepare separate lists of tuples for separate database tables
 all_licenses = list(zip(software_vendors, serials, pk_in))
@@ -132,22 +135,62 @@ print('anti: ', anti_licenses)
 print('abalo: ', abalo_licenses)
 print('none: ', none_licenses)
 
+def create_connection(db_file):
+    """create sqlite3 connection"""
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+        return conn
+    except Error as e:
+        print(e)
+
+    return conn
+
+def create_table(conn, create_table_sql):
+    """create a table from the create_table_sql statement"""
+    try:
+        c = conn.cursor()
+        c.execute(create_table_sql)
+        conn.commit()
+    except Error as e:
+        print(e)
+
+
+def main():
+    database = r":memory:"
+    # make table for each vendor entered as create_table_sql
+    sql_create_antidex_table = "CREATE TABLE IF NOT EXISTS Antidex (s_n TEXT, Product Key TEXT);"
+
+    sql_create_abalobadiah_table = "CREATE TABLE IF NOT EXISTS Abalobadiah (s_n TEXT, Product Key TEXT);"
+
+    sql_create_none_table = "CREATE TABLE IF NOT EXISTS None (s_n TEXT, Product Key TEXT);"
+
+    conn = create_connection(database)
+
+    if conn is not None:
+        create_table(conn, sql_create_antidex_table)
+
+        create_table(conn, sql_create_abalobadiah_table)
+
+        create_table(conn, sql_create_none_table)
+    else:
+        print("Error creating database connection.")
+    # conn.commit()
+
+
+if __name__ == '__main__':
+    main()
+
 conn = sqlite3.connect(":memory:")
 c = conn.cursor()
-# for loop makes table for each vendor entered
-c.execute("CREATE TABLE Antidex (s_n TEXT, Product Key Text);")
-c.execute("CREATE TABLE Abalobadiah (s_n TEXT, Product Key Text);")
-c.execute("CREATE TABLE None (s_n TEXT, Product Key Text);")
-conn.commit()
+# c.executemany("INSERT INTO Antidex VALUES (?,?)", anti_licenses)
+# c.executemany("INSERT INTO Abalobadiah VALUES (?,?)", abalo_licenses)
+# c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
 
-c.executemany("INSERT INTO Antidex VALUES (?,?)", anti_licenses)
-c.executemany("INSERT INTO Abalobadiah VALUES (?,?)", abalo_licenses)
-c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
-
-c.execute("SELECT * FROM Antidex")
-print('Antidex: ', c.fetchall())
-c.execute("SELECT * FROM Abalobadiah")
-print('Abalobadiah: ', c.fetchall())
+# c.execute("SELECT * FROM Antidex")
+# print('Antidex: ', c.fetchall())
+# c.execute("SELECT * FROM Abalobadiah")
+# print('Abalobadiah: ', c.fetchall())
 c.execute("SELECT * FROM None")
 print('None: ', c.fetchall())
 
