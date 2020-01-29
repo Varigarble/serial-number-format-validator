@@ -135,16 +135,18 @@ print('anti: ', anti_licenses)
 print('abalo: ', abalo_licenses)
 print('none: ', none_licenses)
 
+
 def create_connection(db_file):
     """create sqlite3 connection"""
-    conn = None
+    # connect = None
     try:
-        conn = sqlite3.connect(db_file)
-        return conn
+        connect = sqlite3.connect(db_file)  # Shadow(ed) name 'conn' from outer scope
+        connect.commit()
     except Error as e:
         print(e)
 
-    return conn
+    return connect
+
 
 def create_table(conn, create_table_sql):
     """create a table from the create_table_sql statement"""
@@ -154,10 +156,10 @@ def create_table(conn, create_table_sql):
         conn.commit()
     except Error as e:
         print(e)
-
+    return conn
 
 def main():
-    database = r":memory:"
+    database = ":memory:"
     # make table for each vendor entered as create_table_sql
     sql_create_antidex_table = "CREATE TABLE IF NOT EXISTS Antidex (s_n TEXT, Product Key TEXT);"
 
@@ -169,13 +171,12 @@ def main():
 
     if conn is not None:
         create_table(conn, sql_create_antidex_table)
-
         create_table(conn, sql_create_abalobadiah_table)
-
         create_table(conn, sql_create_none_table)
+        conn.commit()
     else:
         print("Error creating database connection.")
-    # conn.commit()
+
 
 
 if __name__ == '__main__':
@@ -185,7 +186,7 @@ conn = sqlite3.connect(":memory:")
 c = conn.cursor()
 # c.executemany("INSERT INTO Antidex VALUES (?,?)", anti_licenses)
 # c.executemany("INSERT INTO Abalobadiah VALUES (?,?)", abalo_licenses)
-# c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
+c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
 
 # c.execute("SELECT * FROM Antidex")
 # print('Antidex: ', c.fetchall())
