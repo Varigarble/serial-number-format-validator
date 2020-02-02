@@ -141,22 +141,24 @@ def create_connection(db_file):
     # connect = None
     try:
         connect = sqlite3.connect(db_file)  # Shadow(ed) name 'conn' from outer scope
-        connect.commit()
+        print("connect success")
     except Error as e:
-        print(e)
-
-    return connect
+        print("connect failure", e)
+    finally:
+        return connect
 
 
 def create_table(conn, create_table_sql):
     """create a table from the create_table_sql statement"""
+    c = conn.cursor()
     try:
-        c = conn.cursor()
         c.execute(create_table_sql)
         conn.commit()
+        print("table success(?)")
     except Error as e:
-        print(e)
-    return conn
+        print("create table error", e)
+    finally:
+        return c, conn
 
 def main():
     database = ":memory:"
@@ -179,21 +181,21 @@ def main():
 
 
 
+
+    conn = sqlite3.connect(database)
+    c = conn.cursor()
+    # # c.executemany("INSERT INTO Antidex VALUES (?,?)", anti_licenses)
+    # # c.executemany("INSERT INTO Abalobadiah VALUES (?,?)", abalo_licenses)
+    # c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
+    #
+    # c.execute("SELECT * FROM Antidex")
+    # print('Antidex: ', c.fetchall())
+    # c.execute("SELECT * FROM Abalobadiah")
+    # print('Abalobadiah: ', c.fetchall())
+    c.execute("SELECT * FROM None")
+    print('None: ', c.fetchall())
+
+    conn.close()
+
 if __name__ == '__main__':
     main()
-
-conn = sqlite3.connect(":memory:")
-c = conn.cursor()
-# c.executemany("INSERT INTO Antidex VALUES (?,?)", anti_licenses)
-# c.executemany("INSERT INTO Abalobadiah VALUES (?,?)", abalo_licenses)
-c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
-
-# c.execute("SELECT * FROM Antidex")
-# print('Antidex: ', c.fetchall())
-# c.execute("SELECT * FROM Abalobadiah")
-# print('Abalobadiah: ', c.fetchall())
-c.execute("SELECT * FROM None")
-print('None: ', c.fetchall())
-
-conn.close()
-
