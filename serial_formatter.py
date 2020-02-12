@@ -137,11 +137,11 @@ print('none: ', none_licenses)
 
 
 def create_connection(db_file):
-    """create sqlite3 connection"""
-    # connect = None
+    connect = None
     try:
-        connect = sqlite3.connect(db_file)  # Shadow(ed) name 'conn' from outer scope
+        connect = sqlite3.connect(db_file)
         print("connect success")
+        return connect
     except Error as e:
         print("connect failure", e)
     finally:
@@ -149,7 +149,6 @@ def create_connection(db_file):
 
 
 def create_table(conn, create_table_sql):
-    """create a table from the create_table_sql statement"""
     c = conn.cursor()
     try:
         c.execute(create_table_sql)
@@ -159,6 +158,7 @@ def create_table(conn, create_table_sql):
         print("create table error", e)
     finally:
         return c, conn
+
 
 def main():
     database = ":memory:"
@@ -175,23 +175,19 @@ def main():
         create_table(conn, sql_create_antidex_table)
         create_table(conn, sql_create_abalobadiah_table)
         create_table(conn, sql_create_none_table)
-        conn.commit()
     else:
         print("Error creating database connection.")
 
-
-
-
-    conn = sqlite3.connect(database)
     c = conn.cursor()
-    # # c.executemany("INSERT INTO Antidex VALUES (?,?)", anti_licenses)
-    # # c.executemany("INSERT INTO Abalobadiah VALUES (?,?)", abalo_licenses)
-    # c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
-    #
-    # c.execute("SELECT * FROM Antidex")
-    # print('Antidex: ', c.fetchall())
-    # c.execute("SELECT * FROM Abalobadiah")
-    # print('Abalobadiah: ', c.fetchall())
+
+    c.executemany("INSERT INTO Antidex VALUES (?,?)", anti_licenses)
+    c.executemany("INSERT INTO Abalobadiah VALUES (?,?)", abalo_licenses)
+    c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
+
+    c.execute("SELECT * FROM Antidex")
+    print('Antidex: ', c.fetchall())
+    c.execute("SELECT * FROM Abalobadiah")
+    print('Abalobadiah: ', c.fetchall())
     c.execute("SELECT * FROM None")
     print('None: ', c.fetchall())
 
@@ -199,3 +195,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
