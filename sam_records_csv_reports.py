@@ -20,20 +20,13 @@ def all_tables_report():
     global c
     c.execute("SELECT NAME from sqlite_master where type=='table'")
     all_tables = c.fetchall()
-    return all_tables
+    # return all_tables
+    with open("sam_records.csv", "w", newline='') as sr_csv:
+        csv_writer = csv.writer(sr_csv)
+        for vendor in all_tables:
+            csv_writer.writerow(vendor)
 
+# for name in all_tables_report():
+#     print(name)
 
-# with open("sam_records.csv", "w", newline='') as sr_csv:
-#     headers = ["Software Vendor", "s/n", "Product Key"]
-#     csv_writer = csv.DictWriter(sr_csv, fieldnames=headers)
-#     csv_writer.writeheader()
-#     i = 0
-#     for vendor in software_vendors:
-#         csv_writer.writerow({
-#             "Software Vendor": software_vendors[i],
-#             "s/n": serials[i],
-#             "Product Key": pk_in[i]})
-#         i += 1
-
-for name in all_tables_report():
-    print(name)
+all_tables_report()
