@@ -119,11 +119,14 @@ print(pk_in)
 # sr_json.close()
 
 # write to sqlite3 db
-
 # created sam_records.db and tables for each vendor
-# c.execute('''CREATE TABLE IF NOT EXISTS Antidex (s_n TEXT, Product Key TEXT);''')
-# c.execute('''CREATE TABLE IF NOT EXISTS Abalobadiah (s_n TEXT, Product Key TEXT);''')
-# c.execute('''CREATE TABLE IF NOT EXISTS None (s_n TEXT, Product Key TEXT);''')
+# conn = sqlite3.connect("sam_records.db")
+# c = conn.cursor()
+# c.execute('''CREATE TABLE IF NOT EXISTS Antidex (s_n TEXT, [Product Key] TEXT);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS Abalobadiah (s_n TEXT, [Product Key] TEXT);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS None (s_n TEXT, [Product Key] TEXT);''')
+# conn.commit()
+# conn.close()
 
 # prepare separate lists of tuples for separate database tables
 all_licenses = list(zip(software_vendors, serials, pk_in))
@@ -163,11 +166,11 @@ def create_table(conn, create_table_sql):
 def main():
     database = ":memory:"
     # make table for each vendor entered as create_table_sql
-    sql_create_antidex_table = "CREATE TABLE IF NOT EXISTS Antidex (s_n TEXT, Product Key TEXT);"
+    sql_create_antidex_table = "CREATE TABLE IF NOT EXISTS Antidex (s_n TEXT, [Product Key] TEXT);"
 
-    sql_create_abalobadiah_table = "CREATE TABLE IF NOT EXISTS Abalobadiah (s_n TEXT, Product Key TEXT);"
+    sql_create_abalobadiah_table = "CREATE TABLE IF NOT EXISTS Abalobadiah (s_n TEXT, [Product Key] TEXT);"
 
-    sql_create_none_table = "CREATE TABLE IF NOT EXISTS None (s_n TEXT, Product Key TEXT);"
+    sql_create_none_table = "CREATE TABLE IF NOT EXISTS None (s_n TEXT, [Product Key] TEXT);"
 
     conn = create_connection(database)
 

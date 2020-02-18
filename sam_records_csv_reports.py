@@ -50,3 +50,4 @@ def all_records_report():
 all_records_report()
 
 
+conn.close()
