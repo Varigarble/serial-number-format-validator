@@ -122,9 +122,9 @@ print(pk_in)
 # created sam_records.db and tables for each vendor
 # conn = sqlite3.connect("sam_records.db")
 # c = conn.cursor()
-# c.execute('''CREATE TABLE IF NOT EXISTS Antidex (s_n TEXT, [Product Key] TEXT);''')
-# c.execute('''CREATE TABLE IF NOT EXISTS Abalobadiah (s_n TEXT, [Product Key] TEXT);''')
-# c.execute('''CREATE TABLE IF NOT EXISTS None (s_n TEXT, [Product Key] TEXT);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS Antidex (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS Abalobadiah (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS None (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);''')
 # conn.commit()
 # conn.close()
 
@@ -164,13 +164,13 @@ def create_table(conn, create_table_sql):
 
 
 def main():
-    database = ":memory:"
+    database = "sam_records.db"
     # make table for each vendor entered as create_table_sql
-    sql_create_antidex_table = "CREATE TABLE IF NOT EXISTS Antidex (s_n TEXT, [Product Key] TEXT);"
+    sql_create_antidex_table = "CREATE TABLE IF NOT EXISTS Antidex (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);"
 
-    sql_create_abalobadiah_table = "CREATE TABLE IF NOT EXISTS Abalobadiah (s_n TEXT, [Product Key] TEXT);"
+    sql_create_abalobadiah_table = "CREATE TABLE IF NOT EXISTS Abalobadiah (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);"
 
-    sql_create_none_table = "CREATE TABLE IF NOT EXISTS None (s_n TEXT, [Product Key] TEXT);"
+    sql_create_none_table = "CREATE TABLE IF NOT EXISTS None (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);"
 
     conn = create_connection(database)
 
@@ -183,9 +183,12 @@ def main():
 
     c = conn.cursor()
 
-    c.executemany("INSERT INTO Antidex VALUES (?,?)", anti_licenses)
-    c.executemany("INSERT INTO Abalobadiah VALUES (?,?)", abalo_licenses)
-    c.executemany("INSERT INTO None VALUES (?,?)", none_licenses)
+    # TODO: auto-increment id: PRIMARY KEY
+    c.executemany("INSERT INTO Antidex (s_n, [Product Key]) VALUES (?,?)", anti_licenses)
+    c.executemany("INSERT INTO Abalobadiah (s_n, [Product Key]) VALUES (?,?)", abalo_licenses)
+    c.executemany("INSERT INTO None (s_n, [Product Key]) VALUES (?,?)", none_licenses)
+
+    conn.commit()
 
     c.execute("SELECT * FROM Antidex")
     print('Antidex: ', c.fetchall())

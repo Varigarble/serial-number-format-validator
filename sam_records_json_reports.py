@@ -38,8 +38,8 @@ def all_records_report():
     global tables_reformatted
     json_dict = ({
         "Software Vendor": tables_reformatted})
-    #     , "s/n": serials,
-    #     "Product Key": pk_in
+        # , "s/n": serials,
+        # "Product Key": pk_in
     # })
     print(json_dict)
     sr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\sam_records.json", "w",
@@ -49,3 +49,6 @@ def all_records_report():
 
 
 all_records_report()
+
+
+conn.close()

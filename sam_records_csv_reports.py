@@ -43,7 +43,8 @@ def all_records_report():
             csv_writer.writerow({
                 "Software Vendor": tables_reformatted[i],})
                 # "s/n": serials[i],
-                # "Product Key": pk_in[i]})
+                # "Product Key": pk_in[i]
+            # })
             i += 1
 
 
