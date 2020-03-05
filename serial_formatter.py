@@ -122,9 +122,9 @@ print(pk_in)
 # created sam_records.db and tables for each vendor
 # conn = sqlite3.connect("sam_records.db")
 # c = conn.cursor()
-# c.execute('''CREATE TABLE IF NOT EXISTS Antidex (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);''')
-# c.execute('''CREATE TABLE IF NOT EXISTS Abalobadiah (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);''')
-# c.execute('''CREATE TABLE IF NOT EXISTS None (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS Antidex (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS Abalobadiah (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);''')
+# c.execute('''CREATE TABLE IF NOT EXISTS None (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);''')
 # conn.commit()
 # conn.close()
 
@@ -166,11 +166,11 @@ def create_table(conn, create_table_sql):
 def main():
     database = "sam_records.db"
     # make table for each vendor entered as create_table_sql
-    sql_create_antidex_table = "CREATE TABLE IF NOT EXISTS Antidex (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);"
+    sql_create_antidex_table = "CREATE TABLE IF NOT EXISTS Antidex (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);"
 
-    sql_create_abalobadiah_table = "CREATE TABLE IF NOT EXISTS Abalobadiah (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);"
+    sql_create_abalobadiah_table = "CREATE TABLE IF NOT EXISTS Abalobadiah (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);"
 
-    sql_create_none_table = "CREATE TABLE IF NOT EXISTS None (id serial PRIMARY KEY, s_n TEXT, [Product Key] TEXT);"
+    sql_create_none_table = "CREATE TABLE IF NOT EXISTS None (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);"
 
     conn = create_connection(database)
 
