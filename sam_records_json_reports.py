@@ -21,11 +21,13 @@ c.execute("SELECT NAME from sqlite_master where type=='table'")
 all_tables = c.fetchall()
 tables_reformatted = [table[0] for table in all_tables]
 
+
 def antidex_report():
     c.execute("SELECT * FROM Antidex")
     all_adx = c.fetchall()
     json_dict = ({"Antidex:": all_adx})
-    adxr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\\antidex_records.json", "w", encoding="utf-8")
+    adxr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\\antidex_records.json", "w",
+                     encoding="utf-8")
     json.dump(json_dict, adxr_json, ensure_ascii=False, indent=4, separators=(',', ': '))
     adxr_json.close()
 
@@ -38,7 +40,7 @@ def abalobadiah_report():
     all_abl = c.fetchall()
     json_dict = ({"Abalobadiah:": all_abl})
     ablr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\\abalobadiah_records.json", "w",
-                   encoding="utf-8")
+                     encoding="utf-8")
     json.dump(json_dict, ablr_json, ensure_ascii=False, indent=4, separators=(',', ': '))
     ablr_json.close()
 
@@ -51,7 +53,7 @@ def none_report():
     all_none = c.fetchall()
     json_dict = ({"None:": all_none})
     noner_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\\none_records.json", "w",
-                   encoding="utf-8")
+                      encoding="utf-8")
     json.dump(json_dict, noner_json, ensure_ascii=False, indent=4, separators=(',', ': '))
     noner_json.close()
 
@@ -75,8 +77,8 @@ def all_records_report():
     global tables_reformatted
     json_dict = ({
         "Software Vendor": tables_reformatted})
-        # , "s/n": serials,
-        # "Product Key": pk_in
+    # , "s/n": serials,
+    # "Product Key": pk_in
     # })
     print(json_dict)
     sr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\sam_records.json", "w",
@@ -86,6 +88,5 @@ def all_records_report():
 
 
 all_records_report()
-
 
 conn.close()

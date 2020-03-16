@@ -4,17 +4,11 @@ import csv
 import sqlite3
 from sqlite3 import Error
 
-'''This project will attempt to do the following:
-    1) Write user-input RegEx to json file via API (browser?)
-        - what format(s) do Snipe-IT and GLPI use for data storage?
-        - should this RegEx library be viewable/shareable between users? should there be separate files for admins and clients?
-        - 
-    2) Accept user-input serial numbers via API; display warning if format doesn't match stored RegEx value for that Vendor
-        - Do Snip-IT and GLPI do this already?
-    3) Store user data in secure, pass-protected location (csv or sql?)
-        - Again, what format(s) do Snipe-IT and GLPI use for data storage?
-    4) Place size/time limits on data storage because this is a demo only
-
+'''This project currently does the following:
+Prompts user input for software vendor licensing information owned by user;
+Accepts input of serial numbers and product keys for certain software vendors only if they conform to known valid formats;
+Writes input to an SQLite3 database where each software vendor is a table;
+Reads from the SQLite3 database to write reports in JSON and CSV formats
 '''
 
 #  RegEx search strings for certain software companies
@@ -22,11 +16,12 @@ auto_ex = re.compile(r'\b(\d{3}-\d{8}\b)')
 auto_key = re.compile(r'([a-zA-Z]|\d)\d([a-zA-Z]|\d)[a-zA-Z]\d')
 abalo_ex = re.compile(r'(\b(\d{4}-){5}\d{4}\b)')
 
+
 # Select from software company: Antidex, Abalobadiah, or None (input prompt for testing,
 # TODO: as drop-down menu in browser)
 
 def entering_func(inputly):
-    '''While loop with user and pre-determined exits as a decorator function'''
+    """While loop with user and pre-determined exits as a decorator function"""
     done = "No"
     if len(software_vendors) == 0:
         max_entries = 13
@@ -42,7 +37,9 @@ def entering_func(inputly):
             done = input("Are you done making entries (y/n)? ")
             max_entries -= 1
 
+
 software_vendors = []
+
 
 @entering_func
 def soft_vend_enter():
@@ -52,11 +49,13 @@ def soft_vend_enter():
     for amnt in range(vend_amount):
         software_vendors.append(vend_name)
 
+
 print(software_vendors)
 
 # initialize list of same length as no. of software vendors entered
 serials = [None for x in range(len(software_vendors))]
 i = 0  # starting index to replace values in lists
+
 
 @entering_func
 def sn_enter():
@@ -74,10 +73,12 @@ def sn_enter():
                 serials[i] = (input(f"That is not a valid serial number for Abalobadiah: "))
         i += 1
 
+
 print(serials)
 
 pk_in = [None for x in range(len(software_vendors))]
 i = 0
+
 
 @entering_func
 def pk_enter():
@@ -89,6 +90,7 @@ def pk_enter():
             while not re.match(auto_key, pk_in[i]):
                 pk_in[i] = (input(f"That is not a valid product key for Antidex: "))
         i += 1
+
 
 print(pk_in)
 
@@ -199,6 +201,6 @@ def main():
 
     conn.close()
 
+
 if __name__ == '__main__':
     main()
-
