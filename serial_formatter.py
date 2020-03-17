@@ -1,24 +1,24 @@
-import json
+# import json
+# import csv
 import re
-import csv
 import sqlite3
 from sqlite3 import Error
 
 '''This project currently does the following:
 Prompts user input for software vendor licensing information owned by user;
-Accepts input of serial numbers and product keys for certain software vendors only if they conform to known valid formats;
+Serial numbers and product keys for certain software vendors are accepted only if they conform to known valid formats;
 Writes input to an SQLite3 database where each software vendor is a table;
 Reads from the SQLite3 database to write reports in JSON and CSV formats
 '''
 
-#  RegEx search strings for certain software companies
+#  RegEx search strings for certain software vendors
 auto_ex = re.compile(r'\b(\d{3}-\d{8}\b)')
 auto_key = re.compile(r'([a-zA-Z]|\d)\d([a-zA-Z]|\d)[a-zA-Z]\d')
 abalo_ex = re.compile(r'(\b(\d{4}-){5}\d{4}\b)')
 
 
-# Select from software company: Antidex, Abalobadiah, or None (input prompt for testing,
-# TODO: as drop-down menu in browser)
+# Select from software vendor: Antidex, Abalobadiah, or None (None is temp. testing name)
+# TODO: interface through PySimpleGUI or browser
 
 def entering_func(inputly):
     """While loop with user and pre-determined exits as a decorator function"""
@@ -61,7 +61,7 @@ i = 0  # starting index to replace values in lists
 def sn_enter():
     global serials
     global i
-    global max_entries
+    global max_entries  # unused?
     if i < len(serials):
         serials[i] = (input(f"Enter a serial number for {software_vendors[i]}: "))
         # if Antidex or Abalobadiah, s/n must match regex
@@ -94,8 +94,8 @@ def pk_enter():
 
 print(pk_in)
 
-# # write to csv
-# TODO: make separate .py file, write csv from db
+# basic JSON and CSV to test input functions:
+# writing to csv directly from serial_formatter.py was deprecated to write from database from sam_records_csv_reports.py
 # with open("sam_records.csv", "w", newline='') as sr_csv:
 #     headers = ["Software Vendor", "s/n", "Product Key"]
 #     csv_writer = csv.DictWriter(sr_csv, fieldnames=headers)
@@ -108,27 +108,16 @@ print(pk_in)
 #             "Product Key": pk_in[i]})
 #         i += 1
 
-# # write to JSON
-# TODO: make separate .py file, write JSON from db
+# writing to JSON directly from serial_formatter.py was deprecated to write from database from sam_records_json_reports.py
 # json_dict = ({
 #         "Software Vendor": software_vendors,
 #         "s/n": serials,
 #         "Product Key": pk_in
 #     })
-# print(json_dict)
 # sr_json = open("D:\GitHub\serial-number-format-validator\sam_records.json", "w", encoding="utf-8")
 # json.dump(json_dict, sr_json, ensure_ascii = False, indent=4, separators=(',', ': '))
 # sr_json.close()
 
-# write to sqlite3 db
-# created sam_records.db and tables for each vendor
-# conn = sqlite3.connect("sam_records.db")
-# c = conn.cursor()
-# c.execute('''CREATE TABLE IF NOT EXISTS Antidex (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);''')
-# c.execute('''CREATE TABLE IF NOT EXISTS Abalobadiah (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);''')
-# c.execute('''CREATE TABLE IF NOT EXISTS None (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);''')
-# conn.commit()
-# conn.close()
 
 # prepare separate lists of tuples for separate database tables
 all_licenses = list(zip(software_vendors, serials, pk_in))
@@ -185,7 +174,6 @@ def main():
 
     c = conn.cursor()
 
-    # TODO: auto-increment id: PRIMARY KEY
     c.executemany("INSERT INTO Antidex (s_n, [Product Key]) VALUES (?,?)", anti_licenses)
     c.executemany("INSERT INTO Abalobadiah (s_n, [Product Key]) VALUES (?,?)", abalo_licenses)
     c.executemany("INSERT INTO None (s_n, [Product Key]) VALUES (?,?)", none_licenses)

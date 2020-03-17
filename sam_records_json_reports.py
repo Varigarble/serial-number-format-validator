@@ -19,7 +19,6 @@ conn = create_connection("sam_records.db")
 c = conn.cursor()
 c.execute("SELECT NAME from sqlite_master where type=='table'")
 all_tables = c.fetchall()
-tables_reformatted = [table[0] for table in all_tables]
 
 
 def antidex_report():
@@ -62,7 +61,7 @@ none_report()
 
 
 def all_vendors_report():
-    global tables_reformatted
+    tables_reformatted = [table[0] for table in all_tables]
     json_dict = ({"Software Vendors:": tables_reformatted})
     sv_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\sam_vendors.json", "w",
                    encoding="utf-8")
@@ -74,13 +73,16 @@ all_vendors_report()
 
 
 def all_records_report():
-    global tables_reformatted
-    json_dict = ({
-        "Software Vendor": tables_reformatted})
-    # , "s/n": serials,
-    # "Product Key": pk_in
-    # })
-    print(json_dict)
+    global all_tables
+    dicts_data = {}
+    i = 1
+    for table in all_tables[1:]:
+        curr_table = all_tables[i][0]
+        c.execute("SELECT * FROM " + curr_table)
+        all_curr_data = c.fetchall()
+        dicts_data[curr_table] = all_curr_data
+        i += 1
+    json_dict = (dicts_data)
     sr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\sam_records.json", "w",
                    encoding="utf-8")
     json.dump(json_dict, sr_json, ensure_ascii=False, indent=4, separators=(',', ': '))
