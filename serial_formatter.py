@@ -4,13 +4,6 @@ import re
 import sqlite3
 from sqlite3 import Error
 
-'''This project currently does the following:
-Prompts user input for software vendor licensing information owned by user;
-Serial numbers and product keys for certain software vendors are accepted only if they conform to known valid formats;
-Writes input to an SQLite3 database where each software vendor is a table;
-Reads from the SQLite3 database to write reports in JSON and CSV formats
-'''
-
 #  RegEx search strings for certain software vendors
 auto_ex = re.compile(r'\b(\d{3}-\d{8}\b)')
 auto_key = re.compile(r'([a-zA-Z]|\d)\d([a-zA-Z]|\d)[a-zA-Z]\d')
