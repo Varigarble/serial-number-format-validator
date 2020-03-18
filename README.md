@@ -4,7 +4,7 @@
 
 This is an example Software Asset Management database tool that uses regular expressions in Python to prevent incorrect data from being entered into a SQLite database.
 It prompts a user to input software vendor licensing information. 
-After entering a software vendors' name, the associated serial numbers and product keys must match a format that that vendor uses encoded in regex.
+After entering a software vendor's name, the associated serial numbers and product keys must match a format that that vendor uses encoded in regex.
 Python scripts read from the database and output reports in JSON and CSV formats.
 
 #### What is it not?
@@ -14,8 +14,8 @@ It does not determine if a serial number is real/authorized/valid/authentic; it 
 #### How is it used?
 
 Start at serial_formatter.py, the input section. 
-When run, you'll get prompts to enter different kinds of data, and you'll probably get stuck on what you need to enter unless you can decode the regex strings, or just copy and paste from the sample output files which in sqlite3, json, and csv formats.
-serial_formatter.py will write to a database file.
+When run, you'll get prompts to enter different kinds of data, and you'll probably get stuck on what you need to enter unless you can decode the regex strings, or just copy and paste from the sample output files which are in sqlite3, json, and csv formats.
+serial_formatter.py will write the input to a database file.
 sam_records_json_reports.py and sam_records_csv_reports.py run queries on the database.
 
 #### Why should it be used?
