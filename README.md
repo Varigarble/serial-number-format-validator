@@ -11,12 +11,19 @@ Python scripts read from the database and output reports in JSON and CSV formats
 
 It does not determine if a serial number is real/authorized/valid/authentic; it only examines the format.
 
-#### Why should one use this?
+#### How is it used?
+
+Start at serial_formatter.py, the input section. 
+When run, you'll get prompts to enter different kinds of data, and you'll probably get stuck on what you need to enter unless you can decode the regex strings, or just copy and paste from the sample output files which in sqlite3, json, and csv formats.
+serial_formatter.py will write to a database file.
+sam_records_json_reports.py and sam_records_csv_reports.py run queries on the database.
+
+#### Why should it be used?
 
 As an IP paralegal with a number of years of experience in software audit analysis, I've seen that malformed audit data is a common source of confusion and wasted time.
 Bad data can be introduced in many different ways (typos, poor packaging scans, incomplete copy/paste), and it's good to catch it before it ever enters the SAM system.
 
-#### Why shouldn't one use this?
+#### Why shouldn't it be used?
 
 It's incomplete - and always will be. 
 It's not possible to write regexes for every product code for every product line for every manufacturer. 
