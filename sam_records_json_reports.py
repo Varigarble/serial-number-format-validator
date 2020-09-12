@@ -1,3 +1,5 @@
+# TODO: can change paths to files to .env values
+
 import json
 import sqlite3
 from sqlite3 import Error
@@ -26,7 +28,7 @@ def antidex_report():
     all_adx = c.fetchall()
     json_dict = ({"Antidex:": all_adx})
     adxr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\\antidex_records.json", "w",
-                     encoding="utf-8")
+                     encoding="utf-8") # TODO: can change path to file to .env value
     json.dump(json_dict, adxr_json, ensure_ascii=False, indent=4, separators=(',', ': '))
     adxr_json.close()
 
