@@ -94,11 +94,11 @@ def main():
 
     # conn = sam_db.create_connection(sam_db.create_connection('sam_records.db'))
 
-    if anti_licenses != []:
+    if anti_licenses:
         sam_db.create_table(sam_db.sql_create_antidex_table)
-    if abalo_licenses != []:
+    if abalo_licenses:
         sam_db.create_table(sam_db.sql_create_abalobadiah_table)
-    if none_licenses != []:
+    if none_licenses:
         sam_db.create_table(sam_db.sql_create_none_table)
     for vend_name in software_vendors:
         if (vend_name != 'Antidex') and (vend_name != 'Abalobadiah') and (vend_name != 'None'):

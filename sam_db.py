@@ -2,6 +2,8 @@ import sqlite3
 from sqlite3 import Error
 
 
+# def main():
+
 def create_connection(db_file):
     connect = None
     try:
@@ -25,7 +27,7 @@ sql_create_none_table = "CREATE TABLE IF NOT EXISTS None (id INTEGER PRIMARY KEY
 sql_create_new_table = "CREATE TABLE IF NOT EXISTS (New_Vendor) (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT) VALUES (?);"
 
 
-def create_table(conn, create_table_sql):
+def create_table(create_table_sql, conn=conn):
     c = conn.cursor()
     try:
         c.execute(create_table_sql)
@@ -47,7 +49,7 @@ def create_tables():
         print("Error creating database connection.")
 
 c = conn.cursor()
-
+"""
 c.executemany("INSERT INTO Antidex (s_n, [Product Key]) VALUES (?,?)", anti_licenses)
 c.executemany("INSERT INTO Abalobadiah (s_n, [Product Key]) VALUES (?,?)", abalo_licenses)
 c.executemany("INSERT INTO None (s_n, [Product Key]) VALUES (?,?)", none_licenses)
@@ -62,4 +64,7 @@ c.execute("SELECT * FROM None")
 print('None: ', c.fetchall())
 
 conn.close()
+"""
 
+# if __name__ == '__main__':
+#     main()
