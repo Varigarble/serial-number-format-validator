@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
-# import serial_formatter.py  # file to be renamed; put funcs in main block
+import sam_db
+import serial_formatter  # file to be renamed; put funcs in main block
 
 sg.theme('Dark Blue 3')  # please make your windows colorful
 
@@ -26,17 +27,22 @@ report_layout = [[sg.Text('Which report would you like?')],
                  ]
 report_window = sg.Window('Report Selector', report_layout)
 
+button_list_2 = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
+add_sn_layout = [[sg.Text("Pick one:")],
+                 [_ for _ in button_list_2]
+                 ]
+add_sn_window = sg.Window("Hmm", add_sn_layout)
+
 
 while True:
     event, values = primary_window.read()
     if event in ('Cancel', None):
         break
     if event == 'Add Software Vendor':
-        # @serial_formatter.entering_func
-        serial_formatter.soft_vend_enter()
+        sam_db.soft_vend_enter(sg.popup_get_text("Enter a new software vendor: "))
     if event == 'Add Serial Number':
-        # @serial_formatter.entering_func
-        serial_formatter.sn_enter()
+        sn_event, sn_value = add_sn_window.read()
+        serial_formatter.test_print(sn_event)
     if event == 'Add Product Key':
         # @serial_formatter.entering_func
         serial_formatter.pk_in()
@@ -46,6 +52,8 @@ while True:
         pass
     if event == 'Update Product Key':
         pass
+    if event == 'View Vendor List':
+        print(sam_db.view_vendors())
     if event == 'Get Reports':
         gr_event, gr_value = report_window.read()
 
