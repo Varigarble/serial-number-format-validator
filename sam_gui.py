@@ -23,16 +23,13 @@ button_list = [sg.Button(_) for _ in vend_test_list]
 print(button_list)
 
 report_layout = [[sg.Text('Which report would you like?')],
-                 [_ for _ in button_list], [sg.FileBrowse()]
-                 ]
+                 [_ for _ in button_list], [sg.FileBrowse()]]
 report_window = sg.Window('Report Selector', report_layout)
 
 button_list_2 = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
 add_sn_layout = [[sg.Text("Pick one:")],
-                 [_ for _ in button_list_2]
-                 ]
-add_sn_window = sg.Window("Hmm", add_sn_layout)
-
+        [_ for _ in button_list_2]]
+add_sn_window = sg.Window(layout=add_sn_layout, title="TODO: Resize Me!", element_padding=((10,10),(5,5)), size=(None, None))
 
 while True:
     event, values = primary_window.read()
@@ -42,7 +39,8 @@ while True:
         sam_db.soft_vend_enter(sg.popup_get_text("Enter a new software vendor: "))
     if event == 'Add Serial Number':
         sn_event, sn_value = add_sn_window.read()
-        serial_formatter.test_print(sn_event)
+        add_sn_window.close()
+        serial_formatter.sn_enter(sn_event, sg.popup_get_text("How many?"))
     if event == 'Add Product Key':
         # @serial_formatter.entering_func
         serial_formatter.pk_in()
@@ -59,5 +57,5 @@ while True:
 
 primary_window.close()
 
-source_filename = values[0]     # the first input element is values[0]
+# source_filename = values[0]     # the first input element is values[0]
 

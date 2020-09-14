@@ -47,27 +47,22 @@ def soft_vend_enter():
 
 # print(software_vendors)
 
-# initialize list of same length as no. of software vendors entered
-serials = [None for x in range(len(software_vendors))]
-# i = 0  # starting index to replace values in lists
 
 # @entering_func
-def sn_enter():
-    # global serials
-    i = 0
-    # global max_entries  # unused?
-    if i < len(serials):
-        serials[i] = (input(f"Enter a serial number for {software_vendors[i]}: "))
+def sn_enter(sn_event, sn_sub_value):
+    serials = []
+    for serial in range(int(sn_sub_value)):
+        serial = (input(f"Enter a serial number for {sn_event}: "))
         # if Antidex or Abalobadiah, s/n must match regex
-        if software_vendors[i] == 'Antidex':
-            while not re.match(auto_ex, serials[i]):
-                serials[i] = (input(f"That is not a valid serial number for Antidex: "))
-        if software_vendors[i] == 'Abalobadiah':
-            while not re.match(abalo_ex, serials[i]):
-                serials[i] = (input(f"That is not a valid serial number for Abalobadiah: "))
-        i += 1
-
-print(serials)
+        if sn_event == 'Antidex':
+            while not re.match(auto_ex, serial):
+                serial = (input(f"That is not a valid serial number for Antidex: "))
+        if sn_event == 'Abalobadiah':
+            while not re.match(abalo_ex, serial):
+                serial = (input(f"That is not a valid serial number for Abalobadiah: "))
+        serials.append((sn_event, serial))
+    print(serials)
+    # TODO: view serials, ask for confirmation to update db table, sam_db.update_table func()
 
 pk_in = [None for x in range(len(software_vendors))]
 # i = 0

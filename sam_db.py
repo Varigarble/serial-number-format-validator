@@ -84,6 +84,11 @@ def soft_vend_enter(vend_name):
 
         exit()
 
+
+def update_table():
+    pass
+
+
 """ Deprecated:
 c.execute("SELECT * FROM Antidex")
 print('Antidex: ', c.fetchall())
