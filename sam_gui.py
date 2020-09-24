@@ -31,6 +31,13 @@ add_sn_layout = [[sg.Text("Pick one:")],
         [_ for _ in button_list_2]]
 add_sn_window = sg.Window(layout=add_sn_layout, title="TODO: Resize Me!", element_padding=((10,10),(5,5)), size=(None, None))
 
+pk_sn_list = [_ for _ in sam_db.view_sns()]
+add_pk_layout = [[sg.Text("Pick Vendor:")],
+                 [sg.Listbox(values=pk_sn_list, size=(40, 10), select_mode='multiple', key='SELECTION', enable_events=True ), \
+                  sg.Button("Add", key='ADD'), sg.Multiline(default_text="selected sns go here", size=(40, 10), key='MULTILINE')]]
+add_pk_window = sg.Window(layout=add_pk_layout, title="TODO: Resize Me!", element_padding=((10,10),(5,5)), size=(None, None))
+#     ]  # view list of unique sns in left display box, click to move to right display box, click to remove from right display box
+
 while True:
     event, values = primary_window.read()
     if event in ('Cancel', None):
@@ -42,8 +49,19 @@ while True:
         add_sn_window.close()
         serial_formatter.sn_enter(sn_event, sg.popup_get_text("How many?"))
     if event == 'Add Product Key':
-        # @serial_formatter.entering_func
-        serial_formatter.pk_in()
+        while True:
+            pk_event, pk_value = add_pk_window.read()
+            if pk_event is None or pk_event == 'Exit':  # always check for closed window
+                break
+            # pending_add = [T35T]
+            if pk_event == 'SELECTION':
+                add_pk_window.Element('MULTILINE').Update(pk_value['SELECTION'])
+                # print(pending_add)
+            # if pk_event == 'ADD':
+            #     add_pk_window.Element('MULTILINE').Update(pending_add)
+            #     print(pending_add)
+        add_pk_window.close()
+        # serial_formatter.pk_in()
     if event == 'Update Software Vendor':
         pass
     if event == 'Update Serial Number':

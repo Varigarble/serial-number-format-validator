@@ -4,6 +4,7 @@ import re
 import sqlite3
 from sqlite3 import Error
 import sam_db
+import PySimpleGUI as sg
 
 # def main():
     #  RegEx search strings for certain software vendors
@@ -48,18 +49,17 @@ def soft_vend_enter():
 # print(software_vendors)
 
 
-# @entering_func
-def sn_enter(sn_event, sn_sub_value):
+def sn_enter(sn_event="Test (actual comes from sam_gui)", sn_sub_value=2):
     serials = []
     for serial in range(int(sn_sub_value)):
-        serial = (input(f"Enter a serial number for {sn_event}: "))
+        serial = sg.popup_get_text(f"Enter a serial number for {sn_event}: ")
         # if Antidex or Abalobadiah, s/n must match regex
         if sn_event == 'Antidex':
             while not re.match(auto_ex, serial):
-                serial = (input(f"That is not a valid serial number for Antidex: "))
+                serial = sg.popup_get_text(f"That is not a valid serial number for Antidex: ")
         if sn_event == 'Abalobadiah':
             while not re.match(abalo_ex, serial):
-                serial = (input(f"That is not a valid serial number for Abalobadiah: "))
+                serial = sg.popup_get_text(f"That is not a valid serial number for Abalobadiah: ")
         serials.append((sn_event, serial))
     print(serials)
     # TODO: view serials, ask for confirmation to update db table, sam_db.update_table func()

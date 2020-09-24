@@ -1,6 +1,6 @@
 import sqlite3
 from sqlite3 import Error
-
+# from typing import NamedTuple TODO: return sql query tuples as named?
 
 # def main():
 
@@ -71,6 +71,13 @@ def view_vendors():
         vend_list = list(c.execute("SELECT DISTINCT Vendor FROM Vendors ORDER BY Vendor"))
     return [vendor_tuple[0] for vendor_tuple in vend_list]
 
+
+def view_sns():
+    with conn:
+        c = conn.cursor()
+        sn_list = list(c.execute("SELECT DISTINCT Serial_Number, Vendor FROM Vendors ORDER BY Vendor"))
+    return sn_list
+# print(view_sns())
 
 def soft_vend_enter(vend_name):
     # vend_name = input("Enter a new software vendor: ")
