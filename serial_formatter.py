@@ -7,7 +7,7 @@ import sam_db
 import PySimpleGUI as sg
 
 # def main():
-    #  RegEx search strings for certain software vendors
+#  RegEx search strings for certain software vendors
 auto_ex = re.compile(r'\b(\d{3}-\d{8}\b)')
 auto_key = re.compile(r'([a-zA-Z]|\d)\d([a-zA-Z]|\d)[a-zA-Z]\d')
 abalo_ex = re.compile(r'(\b(\d{4}-){5}\d{4}\b)')
@@ -33,10 +33,13 @@ def entering_func(inputly):
             done = input("Are you done making entries (y/n)? ")
             max_entries -= 1
 
+
 def test_print(sn_event):
     print(sn_event)
 
+
 software_vendors = []
+
 
 # @entering_func
 def soft_vend_enter():
