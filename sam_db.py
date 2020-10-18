@@ -4,6 +4,7 @@ from sqlite3 import Error
 
 # def main():
 
+
 def create_connection(db_file):
     connect = None
     try:
@@ -77,7 +78,7 @@ def view_sns():
         c = conn.cursor()
         sn_list = list(c.execute("SELECT DISTINCT Serial_Number, Vendor FROM Vendors ORDER BY Vendor"))
     return sn_list
-# print(view_sns())
+
 
 def soft_vend_enter(vend_name):
     # vend_name = input("Enter a new software vendor: ")

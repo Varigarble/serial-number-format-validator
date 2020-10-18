@@ -21,20 +21,6 @@ def main():
     primary_window = sg.Window('Main Menu', primary_layout)
 
 
-    # Reports window
-    button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
-    report_layout = [[sg.Text('Which report would you like?')],
-                     [_ for _ in button_list], [sg.FileBrowse()]]
-    report_window = sg.Window('Report Selector', report_layout)
-
-    # Vendor Query window
-    button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
-    vendor_query_layout = [[sg.Listbox(values=sam_db.view_vendors(), size=(64, 32))]]
-    vendor_query_window = sg.Window(layout=vendor_query_layout, title="Here are all the vendors")
-
-
-    pk_sn_list = [_ for _ in sam_db.view_sns()]
-
     while True:
         # Main menu
         event, values = primary_window.read()
@@ -43,7 +29,6 @@ def main():
             print("Exiting Program")
             exit()
 
-        # Add Software Vendor
         if event == 'Add Software Vendor':
             while True:
                 sv_event = sg.popup_get_text("Enter a new software vendor: ")
@@ -52,8 +37,6 @@ def main():
                 else:
                     sam_db.soft_vend_enter((sv_event))
 
-
-        # Add Serial Number
         if event == 'Add Serial Number':
             button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
             add_sn_layout = [[sg.Text("Pick one:")],
@@ -66,10 +49,18 @@ def main():
                     add_sn_window.close()
                     break
                 else:
-                    serial_formatter.sn_enter(sn_event, sg.popup_get_text("How many?"))
+                    try:
+                        sn_amount = (sg.popup_get_text("How many?"))
+                        print(sn_amount)
+                        if not sn_amount.isdigit():
+                            raise TypeError(sg.popup("Please enter an integer"))
+                    except TypeError:
+                        event = 'Add Serial Number'
+                    else:
+                        serial_formatter.sn_enter(sn_event, sn_amount)
 
-        # Add Product Key
         if event == 'Add Product Key':
+            pk_sn_list = [_ for _ in sam_db.view_sns()]
             add_pk_layout = [[sg.Text("Pick Vendor:")],
                              [sg.Listbox(values=pk_sn_list, size=(40, 10), select_mode='multiple', key='SELECTION',
                                          enable_events=True), \
@@ -86,9 +77,8 @@ def main():
                     break
                 if pk_event == 'SELECTION':
                     add_pk_window.Element('MULTILINE').Update(pk_value['SELECTION'])
-                if pk_event == 'Go':
-                    pass
-                # serial_formatter.pk_in()
+                if pk_event == "Go":  # TODO: send selected to serial_formatter.pk_enter()
+                    print(pk_value['MULTILINE'])
 
         if event == 'Update Software Vendor':
             pass
@@ -97,21 +87,28 @@ def main():
         if event == 'Update Product Key':
             pass
 
-        # Vendor query
         if event == 'View Vendor List':
+            # button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
+            vendor_query_layout = [[sg.Listbox(values=sam_db.view_vendors(), size=(64, 32))]]
+            vendor_query_window = sg.Window(layout=vendor_query_layout, title="Here are all the vendors")
             print(sam_db.view_vendors())
             while True:
                 vq_event, vq_value = vendor_query_window.read()
-                if vq_event == sg.WIN_CLOSED or vq_event == 'Exit':
+                if vq_event is None or vq_event == 'Exit':
                     vendor_query_window.close()
                     break
 
-
-        # Reports
         if event == 'Get Reports':
-            gr_event, gr_value = report_window.read()
+            button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
+            report_layout = [[sg.Text('Which report would you like?')],
+                             [_ for _ in button_list], [sg.FileBrowse()]]
+            report_window = sg.Window('Report Selector', report_layout)
+            while True:
+                gr_event, gr_value = report_window.read()
+                if gr_event is None or gr_event == 'Exit':
+                    report_window.close()
+                    break
 
-    primary_window.close()
 
 main()
 

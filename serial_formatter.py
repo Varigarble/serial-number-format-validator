@@ -52,9 +52,10 @@ def soft_vend_enter():
 # print(software_vendors)
 
 
-def sn_enter(sn_event="Test (actual comes from sam_gui)", sn_sub_value=2):
+def sn_enter(sn_event="Test (actual comes from sam_gui)", sn_amount=2):
     serials = []
-    for serial in range(int(sn_sub_value)):
+    for serial in range(int(sn_amount)):
+        # TODO: Can this be rewritten as a generator for contextlib.contextmanager?
         serial = sg.popup_get_text(f"Enter a serial number for {sn_event}: ")
         # if Antidex or Abalobadiah, s/n must match regex
         if sn_event == 'Antidex':
