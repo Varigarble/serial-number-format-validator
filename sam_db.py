@@ -80,6 +80,13 @@ def view_sns():
     return sn_list
 
 
+def view_all():
+    with conn:
+        c = conn.cursor()
+        all_list = list(c.execute("SELECT DISTINCT Vendor, Serial_Number, Product_Key FROM Vendors ORDER BY Vendor"))
+    return all_list
+
+
 def soft_vend_enter(vend_name):
     # vend_name = input("Enter a new software vendor: ")
     if vend_name.lower() in [v.lower() for v in view_vendors()]:

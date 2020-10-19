@@ -41,7 +41,7 @@ def main():
             button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
             add_sn_layout = [[sg.Text("Pick one:")],
                              [_ for _ in button_list]]
-            add_sn_window = sg.Window(layout=add_sn_layout, title="TODO: Resize Me!",
+            add_sn_window = sg.Window(layout=add_sn_layout, title="Add Serial Number",
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
             while True:
                 sn_event, sn_value = add_sn_window.read()
@@ -51,21 +51,25 @@ def main():
                 else:
                     try:
                         sn_amount = (sg.popup_get_text("How many?"))
+                        if sn_amount is None or sn_amount == 'Exit':
+                            event = 'Add Serial Number'
                         print(sn_amount)
-                        if not sn_amount.isdigit():
-                            raise TypeError(sg.popup("Please enter an integer"))
+                        if sn_amount:
+                            if not sn_amount.isdigit():
+                                raise TypeError(sg.popup("Please enter an integer"))
                     except TypeError:
                         event = 'Add Serial Number'
                     else:
-                        serial_formatter.sn_enter(sn_event, sn_amount)
+                        if sn_amount:
+                            serial_formatter.sn_enter(sn_event, sn_amount)
 
         if event == 'Add Product Key':
             pk_sn_list = [_ for _ in sam_db.view_sns()]
             add_pk_layout = [[sg.Text("Pick Vendor:")],
                              [sg.Listbox(values=pk_sn_list, size=(40, 10), select_mode='multiple', key='SELECTION',
-                                         enable_events=True), \
+                                         enable_events=True),
                               sg.Multiline(default_text="selected sns go here", size=(40, 10), key='MULTILINE'),
-                              sg.Button("Go")]]
+                              sg.Button('Go')]]
             add_pk_window = sg.Window(layout=add_pk_layout, title="TODO: Resize Me!",
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
             """view list of unique sns in left display box, click to move to right display box, click to remove from 
@@ -77,15 +81,68 @@ def main():
                     break
                 if pk_event == 'SELECTION':
                     add_pk_window.Element('MULTILINE').Update(pk_value['SELECTION'])
-                if pk_event == "Go":  # TODO: send selected to serial_formatter.pk_enter()
+                if pk_event == 'Go':  # TODO: send selected to serial_formatter.pk_enter()
                     print(pk_value['MULTILINE'])
 
         if event == 'Update Software Vendor':
-            pass
+            button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
+            usv_layout = [[sg.Text("Select a vendor to modify")], [_ for _ in button_list]]
+            usv_window = sg.Window(layout=usv_layout, title="Update Software Vendor")
+            while True:
+                usv_event, usv_values = usv_window.read()
+                if usv_event is None or usv_event == 'Exit':
+                    usv_window.close()
+                    break
+                else:  # TODO: SQL change vendors in sam_db.py
+                    usv_vendor = sg.popup_get_text("Enter the corrected name")
+                    if usv_vendor is None or usv_vendor == 'Exit':
+                        event = 'Update Software Vendor'
+                    else:
+                        usv_confirm_layout = [[sg.Text(f"ARE YOU SURE YOU WANT TO CHANGE {usv_event} to {usv_vendor}?")],
+                                               [sg.Button('Yes'), sg.Button('No')]
+                                              ]
+                        usv_confirm_window = sg.Window(layout=usv_confirm_layout, title="CAUTION")
+                        while True:
+                            usvc_event, usvc_values = usv_confirm_window.read()
+                            if usvc_event == 'Yes':
+                                print(usv_vendor)
+                                usv_confirm_window.close()
+                            elif usvc_event == 'No':
+                                usv_confirm_window.close()
+                                break
+                            else:
+                                if usvc_event in ('Cancel', None):
+                                    break
+
         if event == 'Update Serial Number':
-            pass
+            update_sn_list = [_ for _ in sam_db.view_sns()]
+            update_sn_layout = [[sg.Text("Select Vendor/Serial Number:")],
+                             [sg.Listbox(values=update_sn_list, size=(40, 10), key='SN_SELECTION',
+                                         enable_events=True),
+                              sg.Button('Go')]]
+            update_sn_window = sg.Window(layout=update_sn_layout, title="Update Serial Number")
+            while True:
+                up_sn_event, up_sn_value = update_sn_window.read()
+                if up_sn_event is None or up_sn_event == 'Exit':
+                    update_sn_window.close()
+                    break
+                if up_sn_event == 'Go':  # TODO: SQL change s/ns in serial_formatter.py
+                    print(up_sn_value['SN_SELECTION'])
+
         if event == 'Update Product Key':
-            pass
+            update_pk_list = [_ for _ in sam_db.view_all()]
+            update_pk_layout = [[sg.Text("Select Vendor/Serial Number:")],
+                                [sg.Listbox(values=update_pk_list, size=(40, 10), key='PK_SELECTION',
+                                            enable_events=True, select_mode='multiple'),
+                                 sg.Button('Go')]]
+            update_pk_window = sg.Window(layout=update_pk_layout, title='Update Product Key')
+            while True:
+                up_pk_event, up_pk_value = update_pk_window.read()
+                if up_pk_event is None or up_pk_event =='Exit':
+                    update_pk_window.close()
+                    break
+                if up_pk_event == 'Go':  # TODO: SQL change product keys in serial_formatter.py
+                    print(up_pk_value['PK_SELECTION'])
 
         if event == 'View Vendor List':
             # button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
@@ -100,7 +157,7 @@ def main():
 
         if event == 'Get Reports':
             button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
-            report_layout = [[sg.Text('Which report would you like?')],
+            report_layout = [[sg.Text("Which report would you like?")],
                              [_ for _ in button_list], [sg.FileBrowse()]]
             report_window = sg.Window('Report Selector', report_layout)
             while True:
