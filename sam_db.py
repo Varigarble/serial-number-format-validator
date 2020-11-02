@@ -88,14 +88,14 @@ def view_all():
 
 
 def soft_vend_enter(vend_name):
-    # vend_name = input("Enter a new software vendor: ")
-    if vend_name.lower() in [v.lower() for v in view_vendors()]:
-        print("That vendor already exists. Do you want to update license information for it?")  # TODO: call update func
-        # exit()
-    else:
-        with conn:
-            conn.execute("INSERT INTO Vendors (Vendor) VALUES (?);", (vend_name,))
-        print("Never heard of 'em. Let me know when their IPO or SPAC is ready to take my money.")
+    # # vend_name = input("Enter a new software vendor: ")
+    # if vend_name.lower() in [v.lower() for v in view_vendors()]:
+    #     print("That vendor already exists. Do you want to update license information for it?")  # TODO: call update func
+    #     # exit()
+    # else:
+    with conn:
+        conn.execute("INSERT INTO Vendors (Vendor) VALUES (?);", (vend_name,))
+    print("Never heard of 'em. Let me know when their IPO or SPAC is ready to take my money.")
 
         # exit()
 

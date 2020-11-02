@@ -31,11 +31,23 @@ def main():
 
         if event == 'Add Software Vendor':
             while True:
-                sv_event = sg.popup_get_text("Enter a new software vendor: ")
+                sv_event = (sg.popup_get_text("Enter a new software vendor: "))
                 if sv_event in ('Cancel', None):
                     break
+                elif sv_event.lower() in [v.lower() for v in sam_db.view_vendors()]:
+                    add_sv_layout = [[sg.Text("That vendor already exists. Do you want to add more licenses for it?")],
+                                     [sg.Button('Yes'), sg.Button('No')]]
+                    add_sv_window = sg.Window(layout=add_sv_layout, title="Confirm Vendor Addition")
+                    while True:
+                        add_sv_event, add_sv_value = add_sv_window.read()
+                        if add_sv_event in ('Cancel', None, 'No'):
+                            add_sv_window.close()
+                            break
+                        if add_sv_event == 'Yes':
+                            # TODO: add option for multiple entries
+                            sam_db.soft_vend_enter(sv_event)
                 else:
-                    sam_db.soft_vend_enter((sv_event))
+                    sam_db.soft_vend_enter(sv_event)
 
         if event == 'Add Serial Number':
             button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
@@ -70,7 +82,7 @@ def main():
                                          enable_events=True),
                               sg.Multiline(default_text="selected sns go here", size=(40, 10), key='MULTILINE'),
                               sg.Button('Go')]]
-            add_pk_window = sg.Window(layout=add_pk_layout, title="TODO: Resize Me!",
+            add_pk_window = sg.Window(layout=add_pk_layout, title="Add Product Key",
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
             """view list of unique sns in left display box, click to move to right display box, click to remove from 
             right display box"""
