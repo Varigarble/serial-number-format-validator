@@ -65,7 +65,6 @@ def main():
                         sn_amount = (sg.popup_get_text("How many?"))
                         if sn_amount is None or sn_amount == 'Exit':
                             event = 'Add Serial Number'
-                        print(sn_amount)
                         if sn_amount:
                             if not sn_amount.isdigit():
                                 raise TypeError(sg.popup("Please enter an integer"))
@@ -74,7 +73,6 @@ def main():
                     else:
                         if sn_amount:
                             sn_add_list = [_ for _ in serial_formatter.sn_enter(sn_event, sn_amount)]
-                            # TODO: view serials, ask for confirmation to update db table, sam_db.update_table func()
                             sn_confirm_layout = [
                                 [sg.Text(f"ARE YOU SURE YOU WANT TO ADD {sn_amount} LICENSE(S) OF {sn_event} WITH SERIAL NUMBER {sn_add_list[0][1]}?")],
                                 [sg.Button('Yes'), sg.Button('No')]
@@ -83,7 +81,7 @@ def main():
                             while True:
                                 sn_confirm_event, sn_confirm_values = sn_confirm_window.read()
                                 if sn_confirm_event == 'Yes':
-                                    print(sn_add_list[0][1])  # TODO: add to db via sam_db.py
+                                    sam_db.sn_write(sn_add_list)
                                     sn_confirm_window.close()
                                 elif sn_confirm_event == 'No':
                                     sn_confirm_window.close()

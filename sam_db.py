@@ -17,8 +17,6 @@ def create_connection(db_file):
         return connect
 
 
-# database = "sam_records.db"
-# conn = create_connection(database)
 conn = create_connection('sam_records.db')
 
 """Deprecated: separate tables for each vendor
@@ -31,6 +29,7 @@ sql_create_new_table = "CREATE TABLE IF NOT EXISTS (New_Vendor) (id INTEGER PRIM
 
 sql_create_vendor_table = "CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMARY KEY AUTOINCREMENT, Vendor TEXT, Serial_Number TEXT, Product_Key TEXT);"
 sql_add_vendor = "INSERT INTO Vendors (Vendor) VALUES (?);"
+
 
 def create_table(create_table_sql, conn=conn):
     c = conn.cursor()
@@ -88,31 +87,23 @@ def view_all():
 
 
 def soft_vend_enter(vend_name):
-    # # vend_name = input("Enter a new software vendor: ")
-    # if vend_name.lower() in [v.lower() for v in view_vendors()]:
-    #     print("That vendor already exists. Do you want to update license information for it?")  # TODO: call update func
-    #     # exit()
-    # else:
     with conn:
         conn.execute("INSERT INTO Vendors (Vendor) VALUES (?);", (vend_name,))
     print("Never heard of 'em. Let me know when their IPO or SPAC is ready to take my money.")
 
-        # exit()
+
+def sn_write(sn_add_list):
+    print(f"preparing to write {sn_add_list}")
+    with conn:
+        for entry in sn_add_list:
+            conn.execute("INSERT INTO Vendors (Vendor, Serial_Number) VALUES (?, ?);", entry)
 
 
 def update_table():
     pass
 
 
-""" Deprecated:
-c.execute("SELECT * FROM Antidex")
-print('Antidex: ', c.fetchall())
-c.execute("SELECT * FROM Abalobadiah")
-print('Abalobadiah: ', c.fetchall())
-c.execute("SELECT * FROM None")
-print('None: ', c.fetchall())
-"""
-# conn.close()
+
 
 
 # if __name__ == '__main__':
