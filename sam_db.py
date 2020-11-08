@@ -76,14 +76,14 @@ def view_vendors():
 def view_sns():
     with conn:
         c = conn.cursor()
-        sn_list = list(c.execute("SELECT DISTINCT Serial_Number, Vendor FROM Vendors ORDER BY Vendor"))
+        sn_list = list(c.execute("SELECT Vendor, DISTINCT Serial_Number FROM Vendors ORDER BY Vendor"))
     return sn_list
 
 
 def view_all():
     with conn:
         c = conn.cursor()
-        all_list = list(c.execute("SELECT DISTINCT Vendor, Serial_Number, Product_Key FROM Vendors ORDER BY Vendor"))
+        all_list = list(c.execute("SELECT Vendor, Serial_Number, Product_Key FROM Vendors ORDER BY Vendor"))
     return all_list
 
 

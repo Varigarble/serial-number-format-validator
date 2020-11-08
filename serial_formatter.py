@@ -65,8 +65,8 @@ def sn_enter(sn_event="Test (actual comes from sam_gui)", sn_amount=2):
             while not re.match(abalo_ex, serial):
                 serial = sg.popup_get_text(f"That is not a valid serial number for Abalobadiah: ")
         serials.append((sn_event, serial))
-    print(serials)
-    # TODO: view serials, ask for confirmation to update db table, sam_db.update_table func()
+    print(serials)  # for testing only
+    return serials  # go back to sam_gui.py
 
 pk_in = [None for x in range(len(software_vendors))]
 # i = 0

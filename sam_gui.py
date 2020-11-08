@@ -73,10 +73,32 @@ def main():
                         event = 'Add Serial Number'
                     else:
                         if sn_amount:
-                            serial_formatter.sn_enter(sn_event, sn_amount)
+                            sn_add_list = [_ for _ in serial_formatter.sn_enter(sn_event, sn_amount)]
+                            # TODO: view serials, ask for confirmation to update db table, sam_db.update_table func()
+                            sn_confirm_layout = [
+                                [sg.Text(f"ARE YOU SURE YOU WANT TO ADD {sn_amount} LICENSE(S) OF {sn_event} WITH SERIAL NUMBER {sn_add_list[0][1]}?")],
+                                [sg.Button('Yes'), sg.Button('No')]
+                                ]
+                            sn_confirm_window = sg.Window(layout=sn_confirm_layout, title="CAUTION")
+                            while True:
+                                sn_confirm_event, sn_confirm_values = sn_confirm_window.read()
+                                if sn_confirm_event == 'Yes':
+                                    print(sn_add_list[0][1])  # TODO: add to db via sam_db.py
+                                    sn_confirm_window.close()
+                                elif sn_confirm_event == 'No':
+                                    sn_confirm_window.close()
+                                    break
+                                else:
+                                    if sn_confirm_event in ('Cancel', None):
+                                        break
 
         if event == 'Add Product Key':
-            pk_sn_list = [_ for _ in sam_db.view_sns()]
+            pre_pk_sn_list = [_ for _ in sam_db.view_all() if not _[2]]  # select only entries w/out product key
+            print(pre_pk_sn_list) # for testing only
+            pk_sn_list = []
+            for view_all_tuple in pre_pk_sn_list:
+                pk_sn_list.append(('Vendor:', view_all_tuple[0], 's/n:', view_all_tuple[1], 'p/k:', view_all_tuple[2]))
+            print(pk_sn_list) # for testing only
             add_pk_layout = [[sg.Text("Pick Vendor:")],
                              [sg.Listbox(values=pk_sn_list, size=(40, 10), select_mode='multiple', key='SELECTION',
                                          enable_events=True),
@@ -106,7 +128,7 @@ def main():
                     usv_window.close()
                     break
                 else:  # TODO: SQL change vendors in sam_db.py
-                    usv_vendor = sg.popup_get_text("Enter the corrected name")
+                    usv_vendor = sg.popup_get_text(f"Enter the corrected name of: {usv_event}")
                     if usv_vendor is None or usv_vendor == 'Exit':
                         event = 'Update Software Vendor'
                     else:
@@ -127,7 +149,7 @@ def main():
                                     break
 
         if event == 'Update Serial Number':
-            update_sn_list = [_ for _ in sam_db.view_sns()]
+            update_sn_list = [_ for _ in sam_db.view_all()]
             update_sn_layout = [[sg.Text("Select Vendor/Serial Number:")],
                              [sg.Listbox(values=update_sn_list, size=(40, 10), key='SN_SELECTION',
                                          enable_events=True),
