@@ -1,6 +1,6 @@
 import sqlite3
 from sqlite3 import Error
-# from typing import NamedTuple TODO: return sql query tuples as named?
+from collections import namedtuple  # query tuples as named?
 
 # def main():
 
@@ -82,8 +82,44 @@ def view_sns():
 def view_all():
     with conn:
         c = conn.cursor()
-        all_list = list(c.execute("SELECT Vendor, Serial_Number, Product_Key FROM Vendors ORDER BY Vendor"))
+        all_list = list(c.execute("SELECT id, Vendor, Serial_Number, Product_Key FROM Vendors ORDER BY Vendor"))
     return all_list
+
+
+#  namedtuple testing:
+def view_all_namedtuple():
+    Row = namedtuple('Row', 'id, Vendor, Serial_Number, Product_Key')
+    i = 0
+    rows_dict = {}
+    for _ in view_all():
+        k = 'row' + str(view_all()[i][0])
+        row = Row(*view_all()[i])
+        rows_dict[k] = row
+        i += 1
+    return rows_dict
+
+
+def view_all_avail_pk():
+    with conn:
+        c = conn.cursor()
+        none_list = list(c.execute("SELECT id, Vendor, Serial_Number, Product_Key FROM Vendors WHERE Product_Key is NULL ORDER BY Vendor"))
+    return none_list
+
+
+def view_all_avail_pk_namedtuple():
+    Row = namedtuple('Row', 'id, Vendor, Serial_Number, Product_Key')
+    i = 0
+    rows_dict = {}
+    for _ in view_all_avail_pk():
+        k = 'row' + str(view_all_avail_pk()[i][0])
+        row = Row(*view_all_avail_pk()[i])
+        rows_dict[k] = row
+        i += 1
+    return rows_dict
+
+
+def view_all_dict():
+    pass
 
 
 def soft_vend_enter(vend_name):

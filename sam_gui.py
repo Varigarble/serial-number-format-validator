@@ -91,14 +91,10 @@ def main():
                                         break
 
         if event == 'Add Product Key':
-            pre_pk_sn_list = [_ for _ in sam_db.view_all() if not _[2]]  # select only entries w/out product key
-            print(pre_pk_sn_list) # for testing only
-            pk_sn_list = []
-            for view_all_tuple in pre_pk_sn_list:
-                pk_sn_list.append(('Vendor:', view_all_tuple[0], 's/n:', view_all_tuple[1], 'p/k:', view_all_tuple[2]))
-            print(pk_sn_list) # for testing only
+            pk_sn_dict = sam_db.view_all_avail_pk_namedtuple()
+            pk_sn_dict_out = {}
             add_pk_layout = [[sg.Text("Pick Vendor:")],
-                             [sg.Listbox(values=pk_sn_list, size=(40, 10), select_mode='multiple', key='SELECTION',
+                             [sg.Listbox(values=list(pk_sn_dict.values()), size=(40, 10), select_mode='multiple', key='SELECTION',
                                          enable_events=True),
                               sg.Multiline(default_text="selected sns go here", size=(40, 10), key='MULTILINE'),
                               sg.Button('Go')]]
@@ -114,7 +110,12 @@ def main():
                 if pk_event == 'SELECTION':
                     add_pk_window.Element('MULTILINE').Update(pk_value['SELECTION'])
                 if pk_event == 'Go':  # TODO: send selected to serial_formatter.pk_enter()
-                    print(pk_value['MULTILINE'])
+                    initial_key = sg.popup_get_text('Enter Product Key: ')
+                    for row in pk_value['SELECTION']:
+                        row_pk_mod = row._replace(Product_Key=initial_key)
+                        pk_sn_dict_out['row' + str(row_pk_mod.id)] = row_pk_mod
+                    print("pk_sn_dict_out:", pk_sn_dict_out)
+
 
         if event == 'Update Software Vendor':
             button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
