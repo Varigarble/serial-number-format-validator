@@ -19,14 +19,6 @@ def create_connection(db_file):
 
 conn = create_connection('sam_records.db')
 
-"""Deprecated: separate tables for each vendor
-# make table for each vendor entered as create_table_sql
-sql_create_antidex_table = "CREATE TABLE IF NOT EXISTS Antidex (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);"
-sql_create_abalobadiah_table = "CREATE TABLE IF NOT EXISTS Abalobadiah (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);"
-sql_create_none_table = "CREATE TABLE IF NOT EXISTS None (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT);"
-sql_create_new_table = "CREATE TABLE IF NOT EXISTS (New_Vendor) (id INTEGER PRIMARY KEY AUTOINCREMENT, s_n TEXT, [Product Key] TEXT) VALUES (?);"
-"""
-
 sql_create_vendor_table = "CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMARY KEY AUTOINCREMENT, Vendor TEXT, Serial_Number TEXT, Product_Key TEXT);"
 sql_add_vendor = "INSERT INTO Vendors (Vendor) VALUES (?);"
 
@@ -51,18 +43,6 @@ def create_tables():
 
     else:
         print("Error creating database connection.")
-
-
-# c = conn.cursor()
-
-
-"""
-c.executemany("INSERT INTO Antidex (s_n, [Product Key]) VALUES (?,?)", anti_licenses)
-c.executemany("INSERT INTO Abalobadiah (s_n, [Product Key]) VALUES (?,?)", abalo_licenses)
-c.executemany("INSERT INTO None (s_n, [Product Key]) VALUES (?,?)", none_licenses)
-
-conn.commit()
-"""
 
 
 def view_vendors():
@@ -109,13 +89,12 @@ def view_all_avail_pk():
 def view_all_avail_pk_namedtuple():
     Row = namedtuple('Row', 'id, Vendor, Serial_Number, Product_Key')
     i = 0
-    rows_dict = {}
+    rows_list = []
     for _ in view_all_avail_pk():
-        k = 'row' + str(view_all_avail_pk()[i][0])
         row = Row(*view_all_avail_pk()[i])
-        rows_dict[k] = row
+        rows_list.append(row)
         i += 1
-    return rows_dict
+    return rows_list
 
 
 def view_all_dict():

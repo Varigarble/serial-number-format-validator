@@ -91,12 +91,12 @@ def main():
                                         break
 
         if event == 'Add Product Key':
-            pk_sn_dict = sam_db.view_all_avail_pk_namedtuple()
-            pk_sn_dict_out = {}
+            pk_list = sam_db.view_all_avail_pk_namedtuple()
+            pk_set_out = set()
             add_pk_layout = [[sg.Text("Pick Vendor:")],
-                             [sg.Listbox(values=list(pk_sn_dict.values()), size=(40, 10), select_mode='multiple', key='SELECTION',
+                             [sg.Listbox(values=pk_list, size=(40, 10), select_mode='multiple', key='SELECTION',
                                          enable_events=True),
-                              sg.Multiline(default_text="selected sns go here", size=(40, 10), key='MULTILINE'),
+                              sg.Listbox(values=["selected sns go here"], size=(40, 10), key='UPDATE'),
                               sg.Button('Go')]]
             add_pk_window = sg.Window(layout=add_pk_layout, title="Add Product Key",
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
@@ -108,13 +108,13 @@ def main():
                     add_pk_window.close()
                     break
                 if pk_event == 'SELECTION':
-                    add_pk_window.Element('MULTILINE').Update(pk_value['SELECTION'])
+                    add_pk_window.Element('UPDATE').Update(pk_value['SELECTION'])
                 if pk_event == 'Go':  # TODO: send selected to serial_formatter.pk_enter()
                     initial_key = sg.popup_get_text('Enter Product Key: ')
                     for row in pk_value['SELECTION']:
                         row_pk_mod = row._replace(Product_Key=initial_key)
-                        pk_sn_dict_out['row' + str(row_pk_mod.id)] = row_pk_mod
-                    print("pk_sn_dict_out:", pk_sn_dict_out)
+                        pk_set_out.add(row_pk_mod)
+                    print("pk_set_out:", pk_set_out)
 
 
         if event == 'Update Software Vendor':
