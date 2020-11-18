@@ -19,7 +19,8 @@ def create_connection(db_file):
 
 conn = create_connection('sam_records.db')
 
-sql_create_vendor_table = "CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMARY KEY AUTOINCREMENT, Vendor TEXT, Serial_Number TEXT, Product_Key TEXT);"
+sql_create_vendor_table = "CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMARY KEY AUTOINCREMENT, Vendor TEXT, \
+                            Serial_Number TEXT, Product_Key TEXT);"
 sql_add_vendor = "INSERT INTO Vendors (Vendor) VALUES (?);"
 
 
@@ -35,34 +36,21 @@ def create_table(create_table_sql, conn=conn):
         return c, conn
 
 
-def create_tables():
-    if conn is not None:
-        create_table(conn, sql_create_antidex_table)
-        create_table(conn, sql_create_abalobadiah_table)
-        create_table(conn, sql_create_none_table)
-
-    else:
-        print("Error creating database connection.")
-
-
 def view_vendors():
     with conn:
-        c = conn.cursor()
-        vend_list = list(c.execute("SELECT DISTINCT Vendor FROM Vendors ORDER BY Vendor"))
+        vend_list = list(conn.cursor().execute("SELECT DISTINCT Vendor FROM Vendors ORDER BY Vendor"))
     return [vendor_tuple[0] for vendor_tuple in vend_list]
 
 
 def view_sns():
     with conn:
-        c = conn.cursor()
-        sn_list = list(c.execute("SELECT Vendor, DISTINCT Serial_Number FROM Vendors ORDER BY Vendor"))
+        sn_list = list(conn.cursor().execute("SELECT Vendor, DISTINCT Serial_Number FROM Vendors ORDER BY Vendor"))
     return sn_list
 
 
 def view_all():
     with conn:
-        c = conn.cursor()
-        all_list = list(c.execute("SELECT id, Vendor, Serial_Number, Product_Key FROM Vendors ORDER BY Vendor"))
+        all_list = list(conn.cursor().execute("SELECT id, Vendor, Serial_Number, Product_Key FROM Vendors ORDER BY Vendor"))
     return all_list
 
 
@@ -79,21 +67,15 @@ def view_all_namedtuple():
     return rows_dict
 
 
-def view_all_avail_pk():
+def view_all_none_pk_namedtuple():
+    # get all entries w/out product keys from db && put in list type required by PySimpleGUI
     with conn:
+        rows_list = []
         c = conn.cursor()
-        none_list = list(c.execute("SELECT id, Vendor, Serial_Number, Product_Key FROM Vendors WHERE Product_Key is NULL ORDER BY Vendor"))
-    return none_list
-
-
-def view_all_avail_pk_namedtuple():
-    Row = namedtuple('Row', 'id, Vendor, Serial_Number, Product_Key')
-    i = 0
-    rows_list = []
-    for _ in view_all_avail_pk():
-        row = Row(*view_all_avail_pk()[i])
-        rows_list.append(row)
-        i += 1
+        c.execute("SELECT id, Vendor, Serial_Number, Product_Key FROM Vendors WHERE Product_Key is NULL ORDER BY Vendor")
+        Row = namedtuple('Row', 'id, Vendor, Serial_Number, Product_Key')
+        for row in map(Row._make, c.fetchall()):
+            rows_list.append(row)
     return rows_list
 
 

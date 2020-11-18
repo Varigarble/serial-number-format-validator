@@ -91,30 +91,37 @@ def main():
                                         break
 
         if event == 'Add Product Key':
-            pk_list = sam_db.view_all_avail_pk_namedtuple()
-            pk_set_out = set()
+            # adds product keys (pk) to entries that have none
+            pk_list = sam_db.view_all_none_pk_namedtuple()  # original list
+            # pk_for_show = [list(zip(item._fields[1:], item[1:])) for item in pk_list]  # pretty display list
+            pk_set_out = set()  # collect rows with new pks in here
             add_pk_layout = [[sg.Text("Pick Vendor:")],
-                             [sg.Listbox(values=pk_list, size=(40, 10), select_mode='multiple', key='SELECTION',
-                                         enable_events=True),
-                              sg.Listbox(values=["selected sns go here"], size=(40, 10), key='UPDATE'),
-                              sg.Button('Go')]]
+                             [sg.Listbox(values=pk_list, size=(100, 10), select_mode='multiple', key='SELECTION',
+                                         enable_events=True, metadata=pk_list)],
+                              [sg.Listbox(values=["selected sns go here"], size=(100, 10), key='UPDATE')],
+                              [sg.Button('Go')]]
             add_pk_window = sg.Window(layout=add_pk_layout, title="Add Product Key",
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
-            """view list of unique sns in left display box, click to move to right display box, click to remove from 
-            right display box"""
             while True:
                 pk_event, pk_value = add_pk_window.read()
                 if pk_event is None or pk_event == 'Exit':  # always check for closed window
                     add_pk_window.close()
                     break
-                if pk_event == 'SELECTION':
+                if pk_event == 'SELECTION':  # add/remove selected to right/lower box
                     add_pk_window.Element('UPDATE').Update(pk_value['SELECTION'])
-                if pk_event == 'Go':  # TODO: send selected to serial_formatter.pk_enter()
+                    # for x in pk_value['SELECTION']:
+                    #     print(pk_for_show.index(x))
+                if pk_event == 'Go':
+                    # pk_temp_set = set()
+                    # for x in pk_value['SELECTION']:
+                        # pk_temp_set.add(pk_list[pk_for_show.index(x)])  # TODO: only gets index of first unique item!
+                        #  PySimpleGUI metadata might fix this; documentation limited
                     initial_key = sg.popup_get_text('Enter Product Key: ')
-                    for row in pk_value['SELECTION']:
-                        row_pk_mod = row._replace(Product_Key=initial_key)
+                    for row in pk_value['SELECTION']:  # pk_temp_set:
+                        row_pk_mod = row._replace(Product_Key=initial_key)  # copy items from original list, replace pk
                         pk_set_out.add(row_pk_mod)
-                    print("pk_set_out:", pk_set_out)
+                    # TODO: send selected to serial_formatter.pk_enter()
+                    print("pk_set_out post-mod:", pk_set_out)
 
 
         if event == 'Update Software Vendor':
