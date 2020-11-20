@@ -93,13 +93,16 @@ def main():
         if event == 'Add Product Key':
             # adds product keys (pk) to entries that have none
             pk_list = sam_db.view_all_none_pk_namedtuple()  # original list
-            # pk_for_show = [list(zip(item._fields[1:], item[1:])) for item in pk_list]  # pretty display list
+            # the pk_list index is hardcoded to the items so that we can see the exact items that wil be updated:
+            indexed_pk_list = list(enumerate(pk_list))
+            # make a subset of data for a pretty display:
+            gui_pk_list = [f"Vendor: {row[1]}, Serial Number: {row[2]}" for row in pk_list]
             pk_set_out = set()  # collect rows with new pks in here
             add_pk_layout = [[sg.Text("Pick Vendor:")],
-                             [sg.Listbox(values=pk_list, size=(100, 10), select_mode='multiple', key='SELECTION',
-                                         enable_events=True, metadata=pk_list)],
+                             [sg.Listbox(values=gui_pk_list, size=(100, 10), select_mode='multiple', key='SELECTION',
+                                         enable_events=True, metadata=())],
                               [sg.Listbox(values=["selected sns go here"], size=(100, 10), key='UPDATE')],
-                              [sg.Button('Go')]]
+                              [sg.B("View Metadata", key="-META-"), sg.Button('Go')]]
             add_pk_window = sg.Window(layout=add_pk_layout, title="Add Product Key",
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
             while True:
@@ -108,20 +111,21 @@ def main():
                     add_pk_window.close()
                     break
                 if pk_event == 'SELECTION':  # add/remove selected to right/lower box
+                    # replace existing metadata with a tuple of the indexes of highlighted items in the Listbox:
+                    add_pk_window.Element('SELECTION').metadata = add_pk_window.Element('SELECTION').GetIndexes()
+                    # copy the pretty display of items into a second Listbox:
                     add_pk_window.Element('UPDATE').Update(pk_value['SELECTION'])
-                    # for x in pk_value['SELECTION']:
-                    #     print(pk_for_show.index(x))
+                if pk_event == "-META-":  # for testing purposes
+                    print("metadata: ", add_pk_window.Element('SELECTION').metadata)
                 if pk_event == 'Go':
-                    # pk_temp_set = set()
-                    # for x in pk_value['SELECTION']:
-                        # pk_temp_set.add(pk_list[pk_for_show.index(x)])  # TODO: only gets index of first unique item!
-                        #  PySimpleGUI metadata might fix this; documentation limited
                     initial_key = sg.popup_get_text('Enter Product Key: ')
-                    for row in pk_value['SELECTION']:  # pk_temp_set:
-                        row_pk_mod = row._replace(Product_Key=initial_key)  # copy items from original list, replace pk
-                        pk_set_out.add(row_pk_mod)
+                    for row in indexed_pk_list:
+                        if indexed_pk_list.index(row) in add_pk_window.Element('SELECTION').metadata:
+                            row_pk_mod = row[1]._replace(Product_Key=initial_key)
+                            pk_set_out.add(row_pk_mod)
                     # TODO: send selected to serial_formatter.pk_enter()
-                    print("pk_set_out post-mod:", pk_set_out)
+                    print("pk_set_out post-mod:", pk_set_out)  # for testing purposes
+                    pk_set_out = set()  # empty the set for re-use
 
 
         if event == 'Update Software Vendor':
