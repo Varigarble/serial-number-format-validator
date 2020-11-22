@@ -8,13 +8,15 @@ import PySimpleGUI as sg
 
 # def main():
 #  RegEx search strings for certain software vendors
-auto_ex = re.compile(r'\b(\d{3}-\d{8}\b)')
-auto_key = re.compile(r'([a-zA-Z]|\d)\d([a-zA-Z]|\d)[a-zA-Z]\d')
+anti_ex = re.compile(r'\b(\d{3}-\d{8}\b)')
+anti_key = re.compile(r'\b([a-zA-Z]|\d)\d([a-zA-Z]|\d)[a-zA-Z]\d\b')
 abalo_ex = re.compile(r'(\b(\d{4}-){5}\d{4}\b)')
+jj_key = re.compile(r'\b\d{3}\b')
 
-
+serial_number_restrictions = {'Antidex': anti_ex, 'Abalobadiah': abalo_ex}
+product_key_restrictions = {'Antidex': anti_key, 'jj': jj_key}
 # Select from software vendor: Antidex, Abalobadiah, or None (None is temp. testing name)
-# TODO: interface through PySimpleGUI or browser
+
 
 def entering_func(inputly):
     """While loop with user and pre-determined exits as a decorator function"""
@@ -59,7 +61,7 @@ def sn_enter(sn_event="Test (actual comes from sam_gui)", sn_amount=2):
         serial = sg.popup_get_text(f"Enter a serial number for {sn_event}: ")
         # if Antidex or Abalobadiah, s/n must match regex
         if sn_event == 'Antidex':
-            while not re.match(auto_ex, serial):
+            while not re.match(anti_ex, serial):
                 serial = sg.popup_get_text(f"That is not a valid serial number for Antidex: ")
         if sn_event == 'Abalobadiah':
             while not re.match(abalo_ex, serial):
@@ -67,19 +69,25 @@ def sn_enter(sn_event="Test (actual comes from sam_gui)", sn_amount=2):
         serials.append((sn_event, serial))
     return serials  # go back to sam_gui.py for confirmation
 
-pk_in = [None for x in range(len(software_vendors))]
-# i = 0
 
-# @entering_func
-def pk_enter():
-    # global pk_in
-    i = 0
-    if i < len(pk_in):
-        pk_in[i] = (input(f"Enter a product key for {software_vendors[i]}, s/n: {serials[i]}: "))
-        if software_vendors[i] == 'Antidex':
-            while not re.match(auto_key, pk_in[i]):
-                pk_in[i] = (input(f"That is not a valid product key for Antidex: "))
-        i += 1
+pk_in = [None for x in range(len(software_vendors))]
+
+
+def pk_checker(row, initial_key):
+    if row is None:
+        row = ''
+    if initial_key is None:
+        initial_key = ''
+    if row[1].Vendor in product_key_restrictions:
+        try:
+            re.match(product_key_restrictions[row[1].Vendor], initial_key)
+            if re.match(product_key_restrictions[row[1].Vendor], initial_key):
+                return row
+        except ValueError:
+            raise ValueError("RegEx mismatch")
+    else:
+        return row
+
 
 # print(pk_in)
 
