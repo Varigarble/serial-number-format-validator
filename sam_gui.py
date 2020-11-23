@@ -97,7 +97,8 @@ def main():
                                                             f"{row.Serial_Number}, Product Key: {row.Product_Key}" for
                                                             row in sn_set_out])
                     print("sn_set_out post-mod:", sn_set_out)  # for testing purposes
-                    # TODO: overwrite rows in db with sn_set_out rows
+                    for row in sn_set_out:
+                        sam_db.serial_one_row_updater(row)
                     sn_set_out = set()  # empty the set for re-use
 
 

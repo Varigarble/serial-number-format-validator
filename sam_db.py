@@ -19,9 +19,16 @@ def create_connection(db_file):
 
 conn = create_connection('sam_records.db')
 
-sql_create_vendor_table = "CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMARY KEY AUTOINCREMENT, Vendor TEXT, \
-                            Serial_Number TEXT, Product_Key TEXT);"
-sql_add_vendor = "INSERT INTO Vendors (Vendor) VALUES (?);"
+sql_create_vendor_table = 'CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMARY KEY AUTOINCREMENT, Vendor TEXT, \
+                            Serial_Number TEXT, Product_Key TEXT);'
+sql_add_vendor = 'INSERT INTO Vendors (Vendor) VALUES (?);'
+sql_update_row = 'UPDATE Vendors SET Serial_Number = ? WHERE id = ?;'
+
+
+def serial_one_row_updater(row):
+    c = conn.cursor()
+    c.execute(sql_update_row, (row.Serial_Number, row.id))
+    conn.commit()
 
 
 def create_table(create_table_sql, conn=conn):
