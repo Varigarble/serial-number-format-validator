@@ -54,23 +54,20 @@ def soft_vend_enter():
 # print(software_vendors)
 
 
-def sn_enter(sn_event="Test (actual comes from sam_gui)", sn_amount=2):
-    serials = []
-    for serial in range(int(sn_amount)):
-        # TODO: Can this be rewritten as a generator for contextlib.contextmanager?
-        serial = sg.popup_get_text(f"Enter a serial number for {sn_event}: ")
-        # if Antidex or Abalobadiah, s/n must match regex
-        if sn_event == 'Antidex':
-            while not re.match(anti_ex, serial):
-                serial = sg.popup_get_text(f"That is not a valid serial number for Antidex: ")
-        if sn_event == 'Abalobadiah':
-            while not re.match(abalo_ex, serial):
-                serial = sg.popup_get_text(f"That is not a valid serial number for Abalobadiah: ")
-        serials.append((sn_event, serial))
-    return serials  # go back to sam_gui.py for confirmation
-
-
-pk_in = [None for x in range(len(software_vendors))]
+def sn_checker(row, initial_key):
+    if row is None:
+        row = ''
+    if initial_key is None:
+        initial_key = ''
+    if row[1].Vendor in serial_number_restrictions:
+        try:
+            re.match(serial_number_restrictions[row[1].Vendor], initial_key)
+            if re.match(serial_number_restrictions[row[1].Vendor], initial_key):
+                return row
+        except ValueError:
+            raise ValueError("RegEx mismatch")
+    else:
+        return row
 
 
 def pk_checker(row, initial_key):

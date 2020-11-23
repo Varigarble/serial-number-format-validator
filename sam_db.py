@@ -44,7 +44,7 @@ def view_vendors():
 
 def view_sns():
     with conn:
-        sn_list = list(conn.cursor().execute("SELECT Vendor, DISTINCT Serial_Number FROM Vendors ORDER BY Vendor"))
+        sn_list = list(conn.cursor().execute("SELECT DISTINCT Vendor, Serial_Number FROM Vendors ORDER BY Vendor"))
     return sn_list
 
 
@@ -65,6 +65,18 @@ def view_all_namedtuple():
         rows_dict[k] = row
         i += 1
     return rows_dict
+
+
+def view_all_none_sn_namedtuple():
+    # get all entries w/out serial numbers from db && put in list type required by PySimpleGUI
+    with conn:
+        rows_list = []
+        c = conn.cursor()
+        c.execute("SELECT DISTINCT id, Vendor, Serial_Number, Product_Key FROM Vendors WHERE Serial_Number is NULL ORDER BY Vendor")
+        Row = namedtuple('Row', 'id, Vendor, Serial_Number, Product_Key')
+        for row in map(Row._make, c.fetchall()):
+            rows_list.append(row)
+    return rows_list
 
 
 def view_all_none_pk_namedtuple():
