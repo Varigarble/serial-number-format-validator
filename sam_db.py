@@ -23,6 +23,15 @@ sql_create_vendor_table = 'CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMAR
                             Serial_Number TEXT, Product_Key TEXT);'
 sql_add_vendor = 'INSERT INTO Vendors (Vendor) VALUES (?);'
 sql_update_row = 'UPDATE Vendors SET Serial_Number = ? WHERE id = ?;'
+sql_update_vendor = 'UPDATE Vendors SET Vendor = ? WHERE Vendor = ?;'
+
+
+def update_vendor(new, old):
+    print(new, old)
+    with conn:
+        c = conn.cursor()
+        c.execute(sql_update_vendor, (new, old))
+        conn.commit()
 
 
 def serial_one_row_updater(sn_set_out):

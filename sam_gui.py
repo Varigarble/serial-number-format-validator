@@ -163,9 +163,10 @@ def main():
                     pk_set_out = set()  # empty the set for re-use
 
         if event == 'Update Software Vendor':
+            # get distinct vendor names, set button size to length of longest name
             vendor_buttons = [sg.Button(vendor, size=(max(len(vendor) for vendor in sam_db.view_vendors()), 1),)
                               for vendor in sam_db.view_vendors()]
-            usv_layout = [[sg.Text("Select a vendor to modify")]]
+            usv_layout = [[sg.Text("Select a vendor name to modify")]]
             # append buttons to usv_layout in a set number per gui row:
             grid_width = 9
             i = 0
@@ -181,7 +182,7 @@ def main():
                 if usv_event is None or usv_event == 'Exit':
                     usv_window.close()
                     break
-                else:  # TODO: SQL change vendors in sam_db.py
+                else:
                     usv_vendor = sg.popup_get_text(f"Enter the corrected name of: {usv_event}")
                     if usv_vendor is None or usv_vendor == 'Exit':
                         event = 'Update Software Vendor'
@@ -192,14 +193,11 @@ def main():
                         while True:
                             usvc_event, usvc_values = usv_confirm_window.read()
                             if usvc_event == 'Yes':
-                                print(usv_vendor)
+                                sam_db.update_vendor(usv_vendor, usv_event)
                                 usv_confirm_window.close()
-                            elif usvc_event == 'No':
+                            else:
                                 usv_confirm_window.close()
                                 break
-                            else:
-                                if usvc_event in ('Cancel', None):
-                                    break
 
         if event == 'Update Serial Number':
             update_sn_list = [_ for _ in sam_db.view_all()]
