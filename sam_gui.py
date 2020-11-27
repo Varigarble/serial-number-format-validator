@@ -163,8 +163,18 @@ def main():
                     pk_set_out = set()  # empty the set for re-use
 
         if event == 'Update Software Vendor':
-            button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
-            usv_layout = [[sg.Text("Select a vendor to modify")], [_ for _ in button_list]]
+            vendor_buttons = [sg.Button(vendor, size=(max(len(vendor) for vendor in sam_db.view_vendors()), 1),)
+                              for vendor in sam_db.view_vendors()]
+            usv_layout = [[sg.Text("Select a vendor to modify")]]
+            # append buttons to usv_layout in a set number per gui row:
+            grid_width = 9
+            i = 0
+            j = grid_width
+            while sum([len(sublists) for sublists in usv_layout])-1 < len(vendor_buttons):
+                sublist = vendor_buttons[i:j]
+                usv_layout.append(sublist)
+                i += grid_width
+                j += grid_width
             usv_window = sg.Window(layout=usv_layout, title="Update Software Vendor")
             while True:
                 usv_event, usv_values = usv_window.read()
@@ -176,9 +186,8 @@ def main():
                     if usv_vendor is None or usv_vendor == 'Exit':
                         event = 'Update Software Vendor'
                     else:
-                        usv_confirm_layout = [[sg.Text(f"ARE YOU SURE YOU WANT TO CHANGE {usv_event} to {usv_vendor}?")],
-                                               [sg.Button('Yes'), sg.Button('No')]
-                                              ]
+                        usv_confirm_layout = [[sg.Text(f"ARE YOU SURE YOU WANT TO CHANGE {usv_event} TO {usv_vendor}?")],
+                                               [sg.Button('Yes'), sg.Button('No')]]
                         usv_confirm_window = sg.Window(layout=usv_confirm_layout, title="CAUTION")
                         while True:
                             usvc_event, usvc_values = usv_confirm_window.read()
