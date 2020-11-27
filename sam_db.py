@@ -25,9 +25,10 @@ sql_add_vendor = 'INSERT INTO Vendors (Vendor) VALUES (?);'
 sql_update_row = 'UPDATE Vendors SET Serial_Number = ? WHERE id = ?;'
 
 
-def serial_one_row_updater(row):
+def serial_one_row_updater(sn_set_out):
     c = conn.cursor()
-    c.execute(sql_update_row, (row.Serial_Number, row.id))
+    for row in sn_set_out:
+        c.execute(sql_update_row, (row.Serial_Number, row.id))
     conn.commit()
 
 
@@ -102,10 +103,11 @@ def view_all_dict():
     pass
 
 
-def soft_vend_enter(vend_name):
+def soft_vend_enter(vend_name, amount):
     with conn:
-        conn.execute("INSERT INTO Vendors (Vendor) VALUES (?);", (vend_name,))
-    print("Never heard of 'em. Let me know when their IPO or SPAC is ready to take my money.")
+        for amnt in range(amount):
+            conn.execute("INSERT INTO Vendors (Vendor) VALUES (?);", (vend_name,))
+    print(f"{amount} license(s) of {vend_name} added to database.")
 
 
 def sn_write(sn_add_list):

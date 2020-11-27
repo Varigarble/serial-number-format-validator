@@ -4,6 +4,7 @@ import serial_formatter  # file to be renamed; put funcs in main block
 
 sg.theme('Dark Blue 3')  # please make your windows colorful
 
+
 def main():
     # Main menu
     primary_layout = [
@@ -19,7 +20,6 @@ def main():
         [sg.Button('Cancel')]
         ]
     primary_window = sg.Window('Main Menu', primary_layout)
-
 
     while True:
         # Main menu
@@ -44,10 +44,21 @@ def main():
                             add_sv_window.close()
                             break
                         if add_sv_event == 'Yes':
-                            # TODO: add option for multiple entries
-                            sam_db.soft_vend_enter(sv_event)
+                            add_sv_window.close()
+                            continue
+                try:
+                    vendor_amount = (sg.popup_get_text("How many licenses do you want to add?"))
+                    if vendor_amount is None or vendor_amount == 'Exit':
+                        break
+                    if vendor_amount:
+                        if not vendor_amount.isdigit():
+                            raise TypeError(sg.popup("Please enter an integer"))
+                except TypeError:
+                    event = 'Add Software Vendor'
                 else:
-                    sam_db.soft_vend_enter(sv_event)
+                    if vendor_amount:
+                        sam_db.soft_vend_enter(sv_event, int(vendor_amount))
+                        break
 
         if event == 'Add Serial Number':
             # adds serial numbers (sn) to entries that have none
@@ -97,10 +108,8 @@ def main():
                                                             f"{row.Serial_Number}, Product Key: {row.Product_Key}" for
                                                             row in sn_set_out])
                     print("sn_set_out post-mod:", sn_set_out)  # for testing purposes
-                    for row in sn_set_out:
-                        sam_db.serial_one_row_updater(row)
+                    sam_db.serial_one_row_updater(sn_set_out)
                     sn_set_out = set()  # empty the set for re-use
-
 
         if event == 'Add Product Key':
             # adds product keys (pk) to entries that have none
