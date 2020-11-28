@@ -69,9 +69,9 @@ def main():
             gui_sn_list = [f"Vendor: {row.Vendor}, Product Key: {row.Product_Key}" for row in sn_list]
             sn_set_out = set()
             add_sn_layout = [[sg.T("Pick Vendor(s):")],
-                            [sg.Listbox(values=gui_sn_list, size=(100, 10), select_mode='multiple', key='SELECTION',
+                            [sg.Listbox(values=gui_sn_list, size=(80, 10), select_mode='multiple', key='SELECTION',
                                         enable_events=True, metadata=())],
-                            [sg.Listbox(values=["Selected rows go here"], size=(100, 10), key='UPDATE')],
+                            [sg.Listbox(values=["Selected rows go here"], size=(80, 10), key='UPDATE')],
                             [sg.B("View Metada", key='-META-'), sg.B("Go")]]
             add_sn_window = sg.Window(layout=add_sn_layout, title="Add Serial Number",
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
@@ -120,9 +120,9 @@ def main():
             gui_pk_list = [f"Vendor: {row.Vendor}, Serial Number: {row.Serial_Number}" for row in pk_list]
             pk_set_out = set()  # collect rows with new pks in here
             add_pk_layout = [[sg.Text("Pick Vendor(s):")],
-                             [sg.Listbox(values=gui_pk_list, size=(100, 10), select_mode='multiple', key='SELECTION',
+                             [sg.Listbox(values=gui_pk_list, size=(80, 10), select_mode='multiple', key='SELECTION',
                                          enable_events=True, metadata=())],
-                              [sg.Listbox(values=["Selected rows go here"], size=(100, 10), key='UPDATE')],
+                              [sg.Listbox(values=["Selected rows go here"], size=(80, 10), key='UPDATE')],
                               [sg.B("View Metadata", key='-META-'), sg.Button("Go")]]
             add_pk_window = sg.Window(layout=add_pk_layout, title="Add Product Key",
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
@@ -159,7 +159,7 @@ def main():
                                                             f"{row.Serial_Number}, Product Key: {row.Product_Key}" for
                                                             row in pk_set_out])
                     print("pk_set_out post-mod:", pk_set_out)  # for testing purposes
-                    # TODO: overwrite rows in db with pk_set_out rows
+                    sam_db.product_key_row_updater(pk_set_out)
                     pk_set_out = set()  # empty the set for re-use
 
         if event == 'Update Software Vendor':
@@ -187,6 +187,7 @@ def main():
                     if usv_vendor is None or usv_vendor == 'Exit':
                         event = 'Update Software Vendor'
                     else:
+                        sg.theme('HotDogStand')
                         usv_confirm_layout = [[sg.Text(f"ARE YOU SURE YOU WANT TO CHANGE {usv_event} TO {usv_vendor}?")],
                                                [sg.Button('Yes'), sg.Button('No')]]
                         usv_confirm_window = sg.Window(layout=usv_confirm_layout, title="CAUTION")
