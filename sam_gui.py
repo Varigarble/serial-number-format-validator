@@ -60,20 +60,15 @@ def main():
                         sam_db.soft_vend_enter(sv_event, int(vendor_amount))
                         break
 
-        if event == 'Add Serial Number':
-            # adds serial numbers (sn) to entries that have none
-            sn_list = sam_db.view_all_none_sn_namedtuple()
-            # the sn_list index is hardcoded to the items so that we can see the exact items that wil be updated:
-            enumerated_sn_list = list(enumerate(sn_list))
-            # make a subset of data for a pretty display:
-            gui_sn_list = [f"Vendor: {row.Vendor}, Product Key: {row.Product_Key}" for row in sn_list]
+        def serial_number_common(enumerated_sn_list, gui_sn_list, title):
+            # functionality shared by 'Add Serial Number' and 'Update Serial Number'
             sn_set_out = set()
             add_sn_layout = [[sg.T("Pick Vendor(s):")],
                             [sg.Listbox(values=gui_sn_list, size=(80, 10), select_mode='multiple', key='SELECTION',
                                         enable_events=True, metadata=())],
                             [sg.Listbox(values=["Selected rows go here"], size=(80, 10), key='UPDATE')],
-                            [sg.B("View Metada", key='-META-'), sg.B("Go")]]
-            add_sn_window = sg.Window(layout=add_sn_layout, title="Add Serial Number",
+                            [sg.B("View Metadata", key='-META-'), sg.B("Go")]]
+            add_sn_window = sg.Window(layout=add_sn_layout, title=title,
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
             while True:
                 sn_event, sn_value = add_sn_window.read()
@@ -104,12 +99,22 @@ def main():
                             else:
                                 row_sn_mod = row[1]._replace(Serial_Number=initial_key)  # enumeration discarded
                                 sn_set_out.add(row_sn_mod)
-                    add_sn_window.Element('UPDATE').Update(["Updated Items:"] + [f"Vendor: {row.Vendor}, Serial Number: "
-                                                            f"{row.Serial_Number}, Product Key: {row.Product_Key}" for
+                    add_sn_window.Element('UPDATE').Update(["Updated Items:"] + [f"Vendor: {row.Vendor}, Serial Number:"
+                                                            f" {row.Serial_Number}, Product Key: {row.Product_Key}" for
                                                             row in sn_set_out])
                     print("sn_set_out post-mod:", sn_set_out)  # for testing purposes
                     sam_db.serial_one_row_updater(sn_set_out)
                     sn_set_out = set()  # empty the set for re-use
+
+        if event == 'Add Serial Number':
+            # adds serial numbers (sn) to entries that have none
+            sn_list = sam_db.view_all_none_sn_namedtuple()
+            # the sn_list index is hardcoded to the items so that we can see the exact items that wil be updated:
+            enumerated_sn_list = list(enumerate(sn_list))
+            # make a subset of data for a pretty display:
+            gui_sn_list = [f"Vendor: {row.Vendor}, Product Key: {row.Product_Key}" for row in sn_list]
+            title = "Add Serial Number"
+            serial_number_common(enumerated_sn_list, gui_sn_list, title)
 
         if event == 'Add Product Key':
             # adds product keys (pk) to entries that have none
@@ -187,7 +192,7 @@ def main():
                     if usv_vendor is None or usv_vendor == 'Exit':
                         event = 'Update Software Vendor'
                     else:
-                        sg.theme('HotDogStand')
+                        sg.theme('HotDogStand')  # eye-catching warning screen
                         usv_confirm_layout = [[sg.Text(f"ARE YOU SURE YOU WANT TO CHANGE {usv_event} TO {usv_vendor}?")],
                                                [sg.Button('Yes'), sg.Button('No')]]
                         usv_confirm_window = sg.Window(layout=usv_confirm_layout, title="CAUTION")
@@ -196,24 +201,22 @@ def main():
                             if usvc_event == 'Yes':
                                 sam_db.update_vendor(usv_vendor, usv_event)
                                 usv_confirm_window.close()
+                                sg.theme('Dark Blue 3')  # reset theme
                             else:
                                 usv_confirm_window.close()
+                                sg.theme('Dark Blue 3')  # reset theme
                                 break
 
         if event == 'Update Serial Number':
-            update_sn_list = [_ for _ in sam_db.view_all()]
-            update_sn_layout = [[sg.Text("Select Vendor/Serial Number:")],
-                             [sg.Listbox(values=update_sn_list, size=(40, 10), key='SN_SELECTION',
-                                         enable_events=True),
-                              sg.Button('Go')]]
-            update_sn_window = sg.Window(layout=update_sn_layout, title="Update Serial Number")
-            while True:
-                up_sn_event, up_sn_value = update_sn_window.read()
-                if up_sn_event is None or up_sn_event == 'Exit':
-                    update_sn_window.close()
-                    break
-                if up_sn_event == 'Go':  # TODO: SQL change s/ns in serial_formatter.py
-                    print(up_sn_value['SN_SELECTION'])
+            # replaces serial numbers (sn) for entries that have one
+            sn_list = sam_db.view_all_sn_namedtuple()
+            # the sn_list index is hardcoded to the items so that we can see the exact items that wil be updated:
+            enumerated_sn_list = list(enumerate(sn_list))
+            # make a subset of data for a pretty display:
+            gui_sn_list = [f"Vendor: {row.Vendor}, Serial Number: {row.Serial_Number}, Product Key: {row.Product_Key}"
+                           for row in sn_list]
+            title = "Update Serial Number"
+            serial_number_common(enumerated_sn_list, gui_sn_list, title)
 
         if event == 'Update Product Key':
             update_pk_list = [_ for _ in sam_db.view_all()]
