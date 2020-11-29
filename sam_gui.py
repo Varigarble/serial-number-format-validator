@@ -8,16 +8,16 @@ sg.theme('Dark Blue 3')  # please make your windows colorful
 def main():
     # Main menu
     primary_layout = [
-        [sg.Text('Please select one of the following options:')],
-        [sg.Button('Add Software Vendor'),
-        sg.Button('Add Serial Number'),
-        sg.Button('Add Product Key')],
-        [sg.Button('Update Software Vendor'),
-        sg.Button('Update Serial Number'),
-        sg.Button('Update Product Key')],
-        [sg.Button('View Vendor List'),
-        sg.Button('Get Reports')],
-        [sg.Button('Cancel')]
+        [sg.Text('Select one of the following options:')],
+        [sg.Button('Add Software Vendor', size=(20, 0)),
+        sg.Button('Add Serial Number', size=(20, 0)),
+        sg.Button('Add Product Key', size=(20, 0))],
+        [sg.Button('Update Software Vendor', size=(20, 0)),
+        sg.Button('Update Serial Number', size=(20, 0)),
+        sg.Button('Update Product Key', size=(20, 0))],
+        [sg.Button('View Vendor List', size=(20, 0)),
+        sg.Button('Get Reports', size=(20, 0))],
+        [sg.Button('Exit')]
         ]
     primary_window = sg.Window('Main Menu', primary_layout)
 
@@ -25,7 +25,7 @@ def main():
         # Main menu
         event, values = primary_window.read()
 
-        if event in ('Cancel', None):
+        if event in ('Exit', None):
             print("Exiting Program")
             exit()
 
@@ -83,21 +83,23 @@ def main():
                 if sn_event == "-META-":  # for testing purposes
                     print("metadata: ", add_sn_window.Element('SELECTION').metadata)
                 if sn_event == 'Go':
-                    initial_key = sg.popup_get_text("Enter Serial Number: ")
+                    initial_sn = sg.popup_get_text("Enter Serial Number: ")
                     for row in enumerated_sn_list:
                         # compare complete namedtuple rows to index values of selected gui rows:
                         if enumerated_sn_list.index(row) in add_sn_window.Element('SELECTION').metadata:
                             # send row to validate serial against regex, request new serial number until validated
-                            if serial_formatter.sn_checker(row, initial_key) != row:
-                                try_key = sg.popup_get_text(str(f"{initial_key} is not a valid serial number for "
+                            if serial_formatter.sn_checker(row, initial_sn) != row:
+                                try_sn = sg.popup_get_text(str(f"{initial_sn} is not a valid serial number for "
                                                                 f"{row[1].Vendor}, Product Key: {row[1].Product_Key}"))
-                                while serial_formatter.sn_checker(row, try_key) != row and try_key is not None:
-                                    try_key = sg.popup_get_text(str(f"{try_key} is not a valid serial number for "
+                                while serial_formatter.sn_checker(row, try_sn) != row and try_sn is not None:
+                                    try_sn = sg.popup_get_text(str(f"{try_sn} is not a valid serial number for "
                                                                     f"{row[1].Vendor}, Product Key: {row[1].Product_Key}"))
-                                row_sn_mod = row[1]._replace(Serial_Number=try_key)  # enumeration discarded
+                                row_sn_mod = row[1]._replace(Serial_Number=try_sn)  # enumeration discarded
                                 sn_set_out.add(row_sn_mod)
                             else:
-                                row_sn_mod = row[1]._replace(Serial_Number=initial_key)  # enumeration discarded
+                                if initial_sn == '':
+                                    initial_sn = None  # not allowing empty strings as sns
+                                row_sn_mod = row[1]._replace(Serial_Number=initial_sn)  # enumeration discarded
                                 sn_set_out.add(row_sn_mod)
                     add_sn_window.Element('UPDATE').Update(["Updated Items:"] + [f"Vendor: {row.Vendor}, Serial Number:"
                                                             f" {row.Serial_Number}, Product Key: {row.Product_Key}" for
@@ -106,30 +108,15 @@ def main():
                     sam_db.serial_one_row_updater(sn_set_out)
                     sn_set_out = set()  # empty the set for re-use
 
-        if event == 'Add Serial Number':
-            # adds serial numbers (sn) to entries that have none
-            sn_list = sam_db.view_all_none_sn_namedtuple()
-            # the sn_list index is hardcoded to the items so that we can see the exact items that wil be updated:
-            enumerated_sn_list = list(enumerate(sn_list))
-            # make a subset of data for a pretty display:
-            gui_sn_list = [f"Vendor: {row.Vendor}, Product Key: {row.Product_Key}" for row in sn_list]
-            title = "Add Serial Number"
-            serial_number_common(enumerated_sn_list, gui_sn_list, title)
-
-        if event == 'Add Product Key':
-            # adds product keys (pk) to entries that have none
-            pk_list = sam_db.view_all_none_pk_namedtuple()  # original list
-            # the pk_list index is hardcoded to the items so that we can see the exact items that wil be updated:
-            enumerated_pk_list = list(enumerate(pk_list))
-            # make a subset of data for a pretty display:
-            gui_pk_list = [f"Vendor: {row.Vendor}, Serial Number: {row.Serial_Number}" for row in pk_list]
+        def product_key_common(pk_list, enumerated_pk_list, gui_pk_list, title):
+            # functionality shared by 'Add Product Key' and 'Update Product Key'
             pk_set_out = set()  # collect rows with new pks in here
             add_pk_layout = [[sg.Text("Pick Vendor(s):")],
                              [sg.Listbox(values=gui_pk_list, size=(80, 10), select_mode='multiple', key='SELECTION',
                                          enable_events=True, metadata=())],
-                              [sg.Listbox(values=["Selected rows go here"], size=(80, 10), key='UPDATE')],
-                              [sg.B("View Metadata", key='-META-'), sg.Button("Go")]]
-            add_pk_window = sg.Window(layout=add_pk_layout, title="Add Product Key",
+                             [sg.Listbox(values=["Selected rows go here"], size=(80, 10), key='UPDATE')],
+                             [sg.B("View Metadata", key='-META-'), sg.Button("Go")]]
+            add_pk_window = sg.Window(layout=add_pk_layout, title=title,
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
             while True:
                 pk_event, pk_value = add_pk_window.read()
@@ -158,20 +145,43 @@ def main():
                                 row_pk_mod = row[1]._replace(Product_Key=try_key)  # enumeration discarded
                                 pk_set_out.add(row_pk_mod)
                             else:
+                                if initial_key == '':
+                                    initial_key = None  # not allowing empty strings as product keys
                                 row_pk_mod = row[1]._replace(Product_Key=initial_key)  # enumeration discarded
                                 pk_set_out.add(row_pk_mod)
-                    add_pk_window.Element('UPDATE').Update(["Updated Items:"] + [f"Vendor: {row.Vendor}, Serial Number: "
-                                                            f"{row.Serial_Number}, Product Key: {row.Product_Key}" for
-                                                            row in pk_set_out])
+                    add_pk_window.Element('UPDATE').Update(
+                        ["Updated Items:"] + [f"Vendor: {row.Vendor}, Serial Number: "
+                                              f"{row.Serial_Number}, Product Key: {row.Product_Key}" for
+                                              row in pk_set_out])
                     print("pk_set_out post-mod:", pk_set_out)  # for testing purposes
                     sam_db.product_key_row_updater(pk_set_out)
                     pk_set_out = set()  # empty the set for re-use
+
+        if event == 'Add Serial Number':
+            # adds serial numbers (sn) to entries that have none
+            sn_list = sam_db.view_all_none_sn_namedtuple()
+            # the sn_list index is hardcoded to the items so that we can see the exact items that wil be updated:
+            enumerated_sn_list = list(enumerate(sn_list))
+            # make a subset of data for a pretty display:
+            gui_sn_list = [f"Vendor: {row.Vendor}, Product Key: {row.Product_Key}" for row in sn_list]
+            title = "Add Serial Number"
+            serial_number_common(enumerated_sn_list, gui_sn_list, title)
+
+        if event == 'Add Product Key':
+            # adds product keys (pk) to entries that have none
+            pk_list = sam_db.view_all_none_pk_namedtuple()  # original list
+            # the pk_list index is hardcoded to the items so that we can see the exact items that wil be updated:
+            enumerated_pk_list = list(enumerate(pk_list))
+            # make a subset of data for a pretty display:
+            gui_pk_list = [f"Vendor: {row.Vendor}, Serial Number: {row.Serial_Number}" for row in pk_list]
+            title = "Add Product Key"
+            product_key_common(pk_list, enumerated_pk_list, gui_pk_list, title)
 
         if event == 'Update Software Vendor':
             # get distinct vendor names, set button size to length of longest name
             vendor_buttons = [sg.Button(vendor, size=(max(len(vendor) for vendor in sam_db.view_vendors()), 1),)
                               for vendor in sam_db.view_vendors()]
-            usv_layout = [[sg.Text("Select a vendor name to modify")]]
+            usv_layout = [[sg.Text("Select a vendor name to modify:")]]
             # append buttons to usv_layout in a set number per gui row:
             grid_width = 9
             i = 0
@@ -219,19 +229,15 @@ def main():
             serial_number_common(enumerated_sn_list, gui_sn_list, title)
 
         if event == 'Update Product Key':
-            update_pk_list = [_ for _ in sam_db.view_all()]
-            update_pk_layout = [[sg.Text("Select Vendor/Serial Number:")],
-                                [sg.Listbox(values=update_pk_list, size=(40, 10), key='PK_SELECTION',
-                                            enable_events=True, select_mode='multiple'),
-                                 sg.Button('Go')]]
-            update_pk_window = sg.Window(layout=update_pk_layout, title='Update Product Key')
-            while True:
-                up_pk_event, up_pk_value = update_pk_window.read()
-                if up_pk_event is None or up_pk_event =='Exit':
-                    update_pk_window.close()
-                    break
-                if up_pk_event == 'Go':  # TODO: SQL change product keys in serial_formatter.py
-                    print(up_pk_value['PK_SELECTION'])
+            # replaces product keys (pk) for entries that have one
+            pk_list = sam_db.view_all_pk_namedtuple()  # original list
+            # the pk_list index is hardcoded to the items so that we can see the exact items that wil be updated:
+            enumerated_pk_list = list(enumerate(pk_list))
+            # make a subset of data for a pretty display:
+            gui_pk_list = [f"Vendor: {row.Vendor}, Serial Number: {row.Serial_Number}, Product Key: {row.Product_Key}"
+                           for row in pk_list]
+            title = "Update Product Key"
+            product_key_common(pk_list, enumerated_pk_list, gui_pk_list, title)
 
         if event == 'View Vendor List':
             # button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]

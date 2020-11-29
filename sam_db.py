@@ -130,6 +130,18 @@ def view_all_none_pk_namedtuple():
     return rows_list
 
 
+def view_all_pk_namedtuple():
+    # get all entries with product keys from db && put in list type required by PySimpleGUI
+    with conn:
+        rows_list = []
+        c = conn.cursor()
+        c.execute("SELECT id, Vendor, Serial_Number, Product_Key FROM Vendors WHERE Product_Key is NOT NULL ORDER BY "
+                  "Vendor")
+        Row = namedtuple('Row', 'id, Vendor, Serial_Number, Product_Key')
+        for row in map(Row._make, c.fetchall()):
+            rows_list.append(row)
+    return rows_list
+
 def view_all_dict():
     pass
 
