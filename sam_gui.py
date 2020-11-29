@@ -108,7 +108,7 @@ def main():
                     sam_db.serial_one_row_updater(sn_set_out)
                     sn_set_out = set()  # empty the set for re-use
 
-        def product_key_common(pk_list, enumerated_pk_list, gui_pk_list, title):
+        def product_key_common(enumerated_pk_list, gui_pk_list, title):
             # functionality shared by 'Add Product Key' and 'Update Product Key'
             pk_set_out = set()  # collect rows with new pks in here
             add_pk_layout = [[sg.Text("Pick Vendor(s):")],
@@ -175,12 +175,13 @@ def main():
             # make a subset of data for a pretty display:
             gui_pk_list = [f"Vendor: {row.Vendor}, Serial Number: {row.Serial_Number}" for row in pk_list]
             title = "Add Product Key"
-            product_key_common(pk_list, enumerated_pk_list, gui_pk_list, title)
+            product_key_common(enumerated_pk_list, gui_pk_list, title)
 
         if event == 'Update Software Vendor':
             # get distinct vendor names, set button size to length of longest name
-            vendor_buttons = [sg.Button(vendor, size=(max(len(vendor) for vendor in sam_db.view_vendors()), 1),)
-                              for vendor in sam_db.view_vendors()]
+            vendor_list = sam_db.view_vendors()
+            vendor_buttons = [sg.Button(vendor, size=(max(len(vendor) for vendor in vendor_list), 1),)
+                              for vendor in vendor_list]
             usv_layout = [[sg.Text("Select a vendor name to modify:")]]
             # append buttons to usv_layout in a set number per gui row:
             grid_width = 9
@@ -237,18 +238,21 @@ def main():
             gui_pk_list = [f"Vendor: {row.Vendor}, Serial Number: {row.Serial_Number}, Product Key: {row.Product_Key}"
                            for row in pk_list]
             title = "Update Product Key"
-            product_key_common(pk_list, enumerated_pk_list, gui_pk_list, title)
+            product_key_common(enumerated_pk_list, gui_pk_list, title)
 
         if event == 'View Vendor List':
-            # button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
-            vendor_query_layout = [[sg.Listbox(values=sam_db.view_vendors(), size=(64, 32))]]
-            vendor_query_window = sg.Window(layout=vendor_query_layout, title="Here are all the vendors")
-            print(sam_db.view_vendors())
+            vendor_list = sam_db.view_vendors()
+            vendor_query_layout = [[sg.Listbox(values=vendor_list, size=(max(len(vendor_list), len('All vendors')+4),
+                                    len(vendor_list)), enable_events=True, key='SELECTION')]]
+            vendor_query_window = sg.Window(layout=vendor_query_layout, title="All vendors")
             while True:
                 vq_event, vq_value = vendor_query_window.read()
                 if vq_event is None or vq_event == 'Exit':
                     vendor_query_window.close()
                     break
+                else:
+                    sg.Popup([f"Vendor: {row.Vendor}, Serial Number: {row.Serial_Number}, Product Key: {row.Product_Key}"
+                            for row in sam_db.view_vendor_info(vq_value['SELECTION'])], title="Licenses")
 
         if event == 'Get Reports':
             button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]

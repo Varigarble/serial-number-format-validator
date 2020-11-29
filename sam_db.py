@@ -142,8 +142,16 @@ def view_all_pk_namedtuple():
             rows_list.append(row)
     return rows_list
 
-def view_all_dict():
-    pass
+
+def view_vendor_info(vendor_name):
+    with conn:
+        rows_list = []
+        c = conn.cursor()
+        c.execute("SELECT Vendor, Serial_Number, Product_Key FROM Vendors WHERE Vendor = ?;", (vendor_name[0],))
+        Row = namedtuple('Row', 'Vendor, Serial_Number, Product_Key')
+        for row in map(Row._make, c.fetchall()):
+            rows_list.append(row)
+    return rows_list
 
 
 def soft_vend_enter(vend_name, amount):
