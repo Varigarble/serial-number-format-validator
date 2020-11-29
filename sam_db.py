@@ -1,8 +1,6 @@
 import sqlite3
 from sqlite3 import Error
-from collections import namedtuple  # query tuples as named?
-
-# def main():
+from collections import namedtuple  # query tuples as named
 
 
 def create_connection(db_file):
@@ -65,31 +63,6 @@ def view_vendors():
     with conn:
         vend_list = list(conn.cursor().execute("SELECT DISTINCT Vendor FROM Vendors ORDER BY Vendor"))
     return [vendor_tuple[0] for vendor_tuple in vend_list]
-
-
-def view_sns():
-    with conn:
-        sn_list = list(conn.cursor().execute("SELECT DISTINCT Vendor, Serial_Number FROM Vendors ORDER BY Vendor"))
-    return sn_list
-
-
-def view_all():
-    with conn:
-        all_list = list(conn.cursor().execute("SELECT id, Vendor, Serial_Number, Product_Key FROM Vendors ORDER BY Vendor"))
-    return all_list
-
-
-#  namedtuple testing:
-def view_all_namedtuple():
-    Row = namedtuple('Row', 'id, Vendor, Serial_Number, Product_Key')
-    i = 0
-    rows_dict = {}
-    for _ in view_all():
-        k = 'row' + str(view_all()[i][0])
-        row = Row(*view_all()[i])
-        rows_dict[k] = row
-        i += 1
-    return rows_dict
 
 
 def view_all_none_sn_namedtuple():
@@ -157,23 +130,6 @@ def view_vendor_info(vendor_name):
 def soft_vend_enter(vend_name, amount):
     with conn:
         for amnt in range(amount):
-            conn.execute("INSERT INTO Vendors (Vendor) VALUES (?);", (vend_name,))
+            conn.execute(sql_add_vendor, (vend_name,))
     print(f"{amount} license(s) of {vend_name} added to database.")
 
-
-def sn_write(sn_add_list):
-    print(f"preparing to write {sn_add_list}")
-    with conn:
-        for entry in sn_add_list:
-            conn.execute("INSERT INTO Vendors (Vendor, Serial_Number) VALUES (?, ?);", entry)
-
-
-def update_table():
-    pass
-
-
-
-
-
-# if __name__ == '__main__':
-#     main()

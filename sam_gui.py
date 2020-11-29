@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 import sam_db
-import serial_formatter  # file to be renamed; put funcs in main block
+import serial_formatter
 
 sg.theme('Dark Blue 3')  # please make your windows colorful
 
@@ -244,7 +244,7 @@ def main():
             vendor_list = sam_db.view_vendors()
             vendor_query_layout = [[sg.Listbox(values=vendor_list, size=(max(len(vendor_list), len('All vendors')+4),
                                     len(vendor_list)), enable_events=True, key='SELECTION')]]
-            vendor_query_window = sg.Window(layout=vendor_query_layout, title="All vendors")
+            vendor_query_window = sg.Window(layout=vendor_query_layout, title="All Vendors")
             while True:
                 vq_event, vq_value = vendor_query_window.read()
                 if vq_event is None or vq_event == 'Exit':
@@ -266,5 +266,6 @@ def main():
                     break
 
 
-main()
+if __name__ == '__main__':
+    main()
 
