@@ -1,6 +1,8 @@
 import PySimpleGUI as sg
 import sam_db
 import serial_formatter
+import sam_records_csv_reports
+import sam_records_json_reports
 
 sg.theme('Dark Blue 3')  # please make your windows colorful
 
@@ -255,8 +257,10 @@ def main():
                             for row in sam_db.view_vendor_info(vq_value['SELECTION'])], title="Licenses")
 
         if event == 'Get Reports':
+            # TODO: Use button layout design of Update Software Vendor
             button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
             report_layout = [[sg.Text("Which report would you like?")],
+                             [sg.B("Vendors Table")],
                              [_ for _ in button_list], [sg.FileBrowse()]]
             report_window = sg.Window('Report Selector', report_layout)
             while True:
@@ -264,6 +268,11 @@ def main():
                 if gr_event is None or gr_event == 'Exit':
                     report_window.close()
                     break
+                if gr_event == "Vendors Table":
+                    # TODO: select format: csv/json
+                    sam_records_csv_reports.all_vendors_report()
+                    sam_records_json_reports.all_records_report()
+                    # TODO: launch files w/ os or subprocess module
 
 
 if __name__ == '__main__':

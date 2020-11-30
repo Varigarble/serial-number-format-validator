@@ -33,7 +33,7 @@ def antidex_report():
     adxr_json.close()
 
 
-antidex_report()
+# antidex_report()
 
 
 def abalobadiah_report():
@@ -46,7 +46,7 @@ def abalobadiah_report():
     ablr_json.close()
 
 
-abalobadiah_report()
+# abalobadiah_report()
 
 
 def none_report():
@@ -59,7 +59,7 @@ def none_report():
     noner_json.close()
 
 
-none_report()
+# none_report()
 
 
 def all_vendors_report():
@@ -71,10 +71,10 @@ def all_vendors_report():
     sv_json.close()
 
 
-all_vendors_report()
+# all_vendors_report()
 
 
-def all_records_report():
+def all_tables_report():  # old version
     global all_tables
     dicts_data = {}
     i = 1
@@ -85,12 +85,31 @@ def all_records_report():
         dicts_data[curr_table] = all_curr_data
         i += 1
     json_dict = (dicts_data)
-    sr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\sam_records.json", "w",
+    sr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\sam_records_1.json", "w",
                    encoding="utf-8")
     json.dump(json_dict, sr_json, ensure_ascii=False, indent=4, separators=(',', ': '))
     sr_json.close()
 
 
-all_records_report()
+# all_tables_report()
+
+
+def all_records_report():  # New 11/2020
+    tables = create_connection("sam_records.db").cursor().execute("SELECT * FROM Vendors").fetchall()
+        # c.execute('SELECT * FROM Vendors;')
+    # TODO: use namedtuples instead of indexes?
+    tables_reformatted = [(f"id: {table[0]}",
+                           f"Vendor: {table[1]}",
+                           f"Serial Number: {table[2]}",
+                           f"Product Key: {table[3]}")
+                          for table in tables]
+    json_dict = ({"Software Vendors": tables_reformatted})
+    sv_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\sam_vendors_1.json", "w",
+                   encoding="utf-8")
+    json.dump(json_dict, sv_json, ensure_ascii=False, indent=4, separators=(',', ': '))
+    sv_json.close()
+
+
+# all_records_report()
 
 conn.close()
