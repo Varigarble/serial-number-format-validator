@@ -20,8 +20,8 @@ conn = create_connection('sam_records.db')
 sql_create_vendor_table = 'CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMARY KEY AUTOINCREMENT, Vendor TEXT, \
                             Serial_Number TEXT, Product_Key TEXT);'
 sql_add_vendor = 'INSERT INTO Vendors (Vendor) VALUES (?);'
-sql_update_sn = 'UPDATE Vendors SET Serial_Number = ? WHERE id = ?;'
 sql_update_vendor = 'UPDATE Vendors SET Vendor = ? WHERE Vendor = ?;'
+sql_update_sn = 'UPDATE Vendors SET Serial_Number = ? WHERE id = ?;'
 sql_update_product_key = 'UPDATE Vendors SET Product_Key = ? WHERE id = ?;'
 
 
@@ -33,17 +33,14 @@ def update_vendor(new, old):
         conn.commit()
 
 
-def serial_one_row_updater(sn_set_out):
+def sn_pk_updater(set_out, sql_command):
     c = conn.cursor()
-    for row in sn_set_out:
-        c.execute(sql_update_sn, (row.Serial_Number, row.id))
-    conn.commit()
-
-
-def product_key_row_updater(pk_set_out):
-    c = conn.cursor()
-    for row in pk_set_out:
-        c.execute(sql_update_product_key, (row.Product_Key, row.id))
+    for row in set_out:
+        if sql_command == sql_update_sn:
+            col = row.Serial_Number
+        if sql_command == sql_update_product_key:
+            col = row.Product_Key
+        c.execute(sql_command, (col, row.id))
     conn.commit()
 
 

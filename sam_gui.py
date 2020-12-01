@@ -107,7 +107,7 @@ def main():
                                                             f" {row.Serial_Number}, Product Key: {row.Product_Key}" for
                                                             row in sn_set_out])
                     print("sn_set_out post-mod:", sn_set_out)  # for testing purposes
-                    sam_db.serial_one_row_updater(sn_set_out)
+                    sam_db.sn_pk_updater(sn_set_out, sam_db.sql_update_sn)
                     sn_set_out = set()  # empty the set for re-use
 
         def product_key_common(enumerated_pk_list, gui_pk_list, title):
@@ -156,7 +156,7 @@ def main():
                                               f"{row.Serial_Number}, Product Key: {row.Product_Key}" for
                                               row in pk_set_out])
                     print("pk_set_out post-mod:", pk_set_out)  # for testing purposes
-                    sam_db.product_key_row_updater(pk_set_out)
+                    sam_db.sn_pk_updater(pk_set_out, sam_db.sql_update_product_key)
                     pk_set_out = set()  # empty the set for re-use
 
         if event == 'Add Serial Number':
