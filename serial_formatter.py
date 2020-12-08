@@ -1,13 +1,12 @@
 import re
 
 #  RegEx search strings for certain software vendors
-anti_ex = re.compile(r'\b(\d{3}-\d{8}\b)')
-anti_key = re.compile(r'\b([a-zA-Z]|\d)\d([a-zA-Z]|\d)[a-zA-Z]\d\b')
+oauth_sn = re.compile(r'\b(\d{3}-\d{8}\b)')
+oauth_key = re.compile(r'\b([a-zA-Z]|\d)\d([a-zA-Z]|\d)[a-zA-Z]\d\b')
 abalo_ex = re.compile(r'(\b(\d{4}-){5}\d{4}\b)')
-jj_key = re.compile(r'\b\d{3}\b')
 
-serial_number_restrictions = {'Antidex': anti_ex, 'Abalobadiah': abalo_ex}
-product_key_restrictions = {'Antidex': anti_key, 'jj': jj_key}
+serial_number_restrictions = {'OAuthDex': oauth_sn, 'Abalobadiah': abalo_ex}
+product_key_restrictions = {'OAuthDex': oauth_key}
 
 
 def sn_checker(row, initial_key):

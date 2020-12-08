@@ -1,6 +1,10 @@
 import sqlite3
-from sqlite3 import Error
-from collections import namedtuple  # query tuples as named
+from collections import namedtuple
+from dotenv import load_dotenv
+from os import getenv
+
+load_dotenv()
+db = getenv('db_filepath')
 
 
 def create_connection(db_file):
@@ -9,14 +13,15 @@ def create_connection(db_file):
         connect = sqlite3.connect(db_file)
         print("connect success")
         return connect
-    except Error as e:
+    except sqlite3.Error as e:
         print("connect failure", e)
     finally:
         return connect
 
 
-conn = create_connection('sam_records.db')
+conn = create_connection(db)
 
+# TODO: delete unused sql statements/make create_db, create_table funcs
 sql_create_vendor_table = 'CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMARY KEY AUTOINCREMENT, Vendor TEXT, \
                             Serial_Number TEXT, Product_Key TEXT);'
 sql_add_vendor = 'INSERT INTO Vendors (Vendor) VALUES (?);'
@@ -50,7 +55,7 @@ def create_table(create_table_sql, conn=conn):
         c.execute(create_table_sql)
         conn.commit()
         print("table success(?)")
-    except Error as e:
+    except sqlite3.Error as e:
         print("create table error", e)
     finally:
         return c, conn
@@ -129,4 +134,3 @@ def soft_vend_enter(vend_name, amount):
         for amnt in range(amount):
             conn.execute(sql_add_vendor, (vend_name,))
     print(f"{amount} license(s) of {vend_name} added to database.")
-

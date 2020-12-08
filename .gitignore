@@ -1,12 +1,4 @@
 .env
-sam_records_reformat.json
-sam_unit_test.json
+sam_unit_test.py
 serial_formatter_old_test_code.py
-sam_records.db
-csvexample3.csv
-sam_records_1.csv
-single line.csv
-customers.csv
-sam_vendors_1.csv
-sam_vendors_1.json
-sam_records_1.json
+env_filenames.py

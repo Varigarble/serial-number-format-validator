@@ -257,22 +257,50 @@ def main():
                             for row in sam_db.view_vendor_info(vq_value['SELECTION'])], title="Licenses")
 
         if event == 'Get Reports':
-            # TODO: Use button layout design of Update Software Vendor
-            button_list = [sg.Button(vendor) for vendor in sam_db.view_vendors()]
+            # get distinct vendor names, set button size to length of longest name
+            vendor_list = sam_db.view_vendors()
+            vendor_buttons = [sg.Button(vendor, size=(max(len(vendor) for vendor in vendor_list), 1),)
+                              for vendor in vendor_list]
             report_layout = [[sg.Text("Which report would you like?")],
-                             [sg.B("Vendors Table")],
-                             [_ for _ in button_list], [sg.FileBrowse()]]
-            report_window = sg.Window('Report Selector', report_layout)
+                             [sg.B("Vendors")],
+                            [sg.B("Exit")]]
+            # append buttons to report_layout in a set number per gui row:
+            grid_width = 9
+            i = 0
+            j = grid_width
+            while sum([len(sublists) for sublists in report_layout]) -3 < len(vendor_buttons):
+                sublist = vendor_buttons[i:j]
+                report_layout.insert(-1, sublist)
+                i += grid_width
+                j += grid_width
+            report_window = sg.Window(layout=report_layout, title="Report Selector")
             while True:
                 gr_event, gr_value = report_window.read()
                 if gr_event is None or gr_event == 'Exit':
                     report_window.close()
                     break
-                if gr_event == "Vendors Table":
-                    # TODO: select format: csv/json
-                    sam_records_csv_reports.all_vendors_report()
-                    sam_records_json_reports.all_records_report()
-                    # TODO: launch files w/ os or subprocess module
+                else:
+                    format_layout = [[sg.T("Select Format:")], [sg.B("CSV"), sg.B("JSON")]]
+                    format_window = sg.Window(layout=format_layout, title="Select Format")
+                    while True:
+                        format_event, format_values = format_window.read()
+                        if format_event is None or format_event == 'Exit':
+                            format_window.close()
+                            break
+                        if format_event == "CSV":
+                            if gr_event == "Vendors":
+                                sam_records_csv_reports.all_vendors_report()
+                            else:
+                                sam_records_csv_reports.one_vendor_report(gr_event)
+                            format_window.close()
+                            break
+                        if format_event == "JSON":
+                            if gr_event == "Vendors":
+                                sam_records_json_reports.all_vendors_report()
+                            else:
+                                sam_records_json_reports.one_vendor_report(gr_event)
+                            format_window.close()
+                            break
 
 
 if __name__ == '__main__':
