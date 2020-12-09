@@ -21,8 +21,7 @@ def create_connection(db_file):
 
 conn = create_connection(db)
 
-# TODO: delete unused sql statements/make create_db, create_table funcs
-sql_create_vendor_table = 'CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMARY KEY AUTOINCREMENT, Vendor TEXT, \
+sql_create_vendors_table = 'CREATE TABLE IF NOT EXISTS Vendors (id INTEGER PRIMARY KEY AUTOINCREMENT, Vendor TEXT, \
                             Serial_Number TEXT, Product_Key TEXT);'
 sql_add_vendor = 'INSERT INTO Vendors (Vendor) VALUES (?);'
 sql_update_vendor = 'UPDATE Vendors SET Vendor = ? WHERE Vendor = ?;'
@@ -30,35 +29,37 @@ sql_update_sn = 'UPDATE Vendors SET Serial_Number = ? WHERE id = ?;'
 sql_update_product_key = 'UPDATE Vendors SET Product_Key = ? WHERE id = ?;'
 
 
+def create_vendors_table():  # no gui
+    with conn:
+        c = conn.cursor()
+        try:
+            c.execute(sql_create_vendors_table)
+            conn.commit()
+        except sqlite3.Error as e:
+            print("create vendors table error", e)
+        finally:
+            return c, conn
+
+
+create_vendors_table()
+
+
 def update_vendor(new, old):
     print(new, old)
     with conn:
-        c = conn.cursor()
-        c.execute(sql_update_vendor, (new, old))
+        conn.cursor().execute(sql_update_vendor, (new, old))
         conn.commit()
 
 
 def sn_pk_updater(set_out, sql_command):
-    c = conn.cursor()
-    for row in set_out:
-        if sql_command == sql_update_sn:
-            col = row.Serial_Number
-        if sql_command == sql_update_product_key:
-            col = row.Product_Key
-        c.execute(sql_command, (col, row.id))
-    conn.commit()
-
-
-def create_table(create_table_sql, conn=conn):
-    c = conn.cursor()
-    try:
-        c.execute(create_table_sql)
+    with conn:
+        for row in set_out:
+            if sql_command == sql_update_sn:
+                col = row.Serial_Number
+            if sql_command == sql_update_product_key:
+                col = row.Product_Key
+            conn.cursor().execute(sql_command, (col, row.id))
         conn.commit()
-        print("table success(?)")
-    except sqlite3.Error as e:
-        print("create table error", e)
-    finally:
-        return c, conn
 
 
 def view_vendors():
@@ -133,4 +134,5 @@ def soft_vend_enter(vend_name, amount):
     with conn:
         for amnt in range(amount):
             conn.execute(sql_add_vendor, (vend_name,))
+        conn.commit()
     print(f"{amount} license(s) of {vend_name} added to database.")

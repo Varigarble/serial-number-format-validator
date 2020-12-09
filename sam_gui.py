@@ -18,7 +18,9 @@ def main():
         sg.Button('Update Serial Number', size=(20, 0)),
         sg.Button('Update Product Key', size=(20, 0))],
         [sg.Button('View Vendor List', size=(20, 0)),
-        sg.Button('Get Reports', size=(20, 0))],
+        sg.Button('Get Reports', size=(20, 0)),
+        sg.Button('Delete Records', size=(20, 0), visible=False)],
+        [sg.HorizontalSeparator()],
         [sg.Button('Exit')]
         ]
     primary_window = sg.Window('Main Menu', primary_layout)
@@ -65,16 +67,17 @@ def main():
         def serial_number_common(enumerated_sn_list, gui_sn_list, title):
             # functionality shared by 'Add Serial Number' and 'Update Serial Number'
             sn_set_out = set()
+            listbox_width = max([len(row) for row in gui_sn_list])
             add_sn_layout = [[sg.T("Pick Vendor(s):")],
-                            [sg.Listbox(values=gui_sn_list, size=(80, 10), select_mode='multiple', key='SELECTION',
-                                        enable_events=True, metadata=())],
-                            [sg.Listbox(values=["Selected rows go here"], size=(80, 10), key='UPDATE')],
-                            [sg.B("View Metadata", key='-META-'), sg.B("Go")]]
+                            [sg.Listbox(values=gui_sn_list, size=(listbox_width, 10), select_mode='multiple',
+                                        key='SELECTION', enable_events=True, metadata=())],
+                            [sg.Listbox(values=["Selected rows go here"], size=(listbox_width, 10), key='UPDATE')],
+                            [sg.B("Go"), sg.B("Cancel")]]
             add_sn_window = sg.Window(layout=add_sn_layout, title=title,
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
             while True:
                 sn_event, sn_value = add_sn_window.read()
-                if sn_event is None or sn_event == 'Exit':
+                if sn_event is None or sn_event == 'Cancel':
                     add_sn_window.close()
                     break
                 if sn_event == 'SELECTION':  # add/remove selected to right/lower box
@@ -82,8 +85,6 @@ def main():
                     add_sn_window.Element('SELECTION').metadata = add_sn_window.Element('SELECTION').GetIndexes()
                     # copy the pretty display of items into a second Listbox:
                     add_sn_window.Element('UPDATE').Update(sn_value['SELECTION'])
-                if sn_event == "-META-":  # for testing purposes
-                    print("metadata: ", add_sn_window.Element('SELECTION').metadata)
                 if sn_event == 'Go':
                     initial_sn = sg.popup_get_text("Enter Serial Number: ")
                     for row in enumerated_sn_list:
@@ -113,16 +114,17 @@ def main():
         def product_key_common(enumerated_pk_list, gui_pk_list, title):
             # functionality shared by 'Add Product Key' and 'Update Product Key'
             pk_set_out = set()  # collect rows with new pks in here
+            listbox_width = max([len(row) for row in gui_pk_list])
             add_pk_layout = [[sg.Text("Pick Vendor(s):")],
-                             [sg.Listbox(values=gui_pk_list, size=(80, 10), select_mode='multiple', key='SELECTION',
+                             [sg.Listbox(values=gui_pk_list, size=(listbox_width, 10), select_mode='multiple', key='SELECTION',
                                          enable_events=True, metadata=())],
-                             [sg.Listbox(values=["Selected rows go here"], size=(80, 10), key='UPDATE')],
-                             [sg.B("View Metadata", key='-META-'), sg.Button("Go")]]
+                             [sg.Listbox(values=["Selected rows go here"], size=(listbox_width, 10), key='UPDATE')],
+                             [sg.Button("Go"), sg.B("Cancel")]]
             add_pk_window = sg.Window(layout=add_pk_layout, title=title,
                                       element_padding=((10, 10), (5, 5)), size=(None, None))
             while True:
                 pk_event, pk_value = add_pk_window.read()
-                if pk_event is None or pk_event == 'Exit':  # always check for closed window
+                if pk_event is None or pk_event == 'Cancel':  # always check for closed window
                     add_pk_window.close()
                     break
                 if pk_event == 'SELECTION':  # add/remove selected to right/lower box
@@ -130,8 +132,6 @@ def main():
                     add_pk_window.Element('SELECTION').metadata = add_pk_window.Element('SELECTION').GetIndexes()
                     # copy the pretty display of items into a second Listbox:
                     add_pk_window.Element('UPDATE').Update(pk_value['SELECTION'])
-                if pk_event == "-META-":  # for testing purposes
-                    print("metadata: ", add_pk_window.Element('SELECTION').metadata)
                 if pk_event == 'Go':
                     initial_key = sg.popup_get_text("Enter Product Key: ")
                     for row in enumerated_pk_list:
@@ -244,8 +244,11 @@ def main():
 
         if event == 'View Vendor List':
             vendor_list = sam_db.view_vendors()
-            vendor_query_layout = [[sg.Listbox(values=vendor_list, size=(max(len(vendor_list), len('All vendors')+4),
-                                    len(vendor_list)), enable_events=True, key='SELECTION')]]
+            listbox_width = max(26, max([len(row) for row in vendor_list]))
+            listbox_height = min(20, len(vendor_list))
+            vendor_query_layout = [[sg.T("All Vendors:")],
+                                    [sg.Listbox(values=vendor_list, size=(listbox_width, listbox_height),
+                                               enable_events=True, key='SELECTION')]]
             vendor_query_window = sg.Window(layout=vendor_query_layout, title="All Vendors")
             while True:
                 vq_event, vq_value = vendor_query_window.read()
@@ -259,24 +262,27 @@ def main():
         if event == 'Get Reports':
             # get distinct vendor names, set button size to length of longest name
             vendor_list = sam_db.view_vendors()
-            vendor_buttons = [sg.Button(vendor, size=(max(len(vendor) for vendor in vendor_list), 1),)
+            button_width = max(len(vendor) for vendor in vendor_list)
+            vendor_buttons = [sg.Button(vendor, size=(button_width, 1))
                               for vendor in vendor_list]
             report_layout = [[sg.Text("Which report would you like?")],
-                             [sg.B("Vendors")],
-                            [sg.B("Exit")]]
+                             [sg.B("All Vendors")],
+                             [sg.HorizontalSeparator()],
+                             [sg.HorizontalSeparator()],
+                            [sg.B("Cancel")]]
             # append buttons to report_layout in a set number per gui row:
             grid_width = 9
             i = 0
             j = grid_width
             while sum([len(sublists) for sublists in report_layout]) -3 < len(vendor_buttons):
                 sublist = vendor_buttons[i:j]
-                report_layout.insert(-1, sublist)
+                report_layout.insert(-2, sublist)
                 i += grid_width
                 j += grid_width
             report_window = sg.Window(layout=report_layout, title="Report Selector")
             while True:
                 gr_event, gr_value = report_window.read()
-                if gr_event is None or gr_event == 'Exit':
+                if gr_event is None or gr_event == 'Cancel':
                     report_window.close()
                     break
                 else:
@@ -284,25 +290,27 @@ def main():
                     format_window = sg.Window(layout=format_layout, title="Select Format")
                     while True:
                         format_event, format_values = format_window.read()
-                        if format_event is None or format_event == 'Exit':
+                        if format_event is None:
                             format_window.close()
                             break
                         if format_event == "CSV":
-                            if gr_event == "Vendors":
+                            if gr_event == "All Vendors":
                                 sam_records_csv_reports.all_vendors_report()
                             else:
                                 sam_records_csv_reports.one_vendor_report(gr_event)
                             format_window.close()
                             break
                         if format_event == "JSON":
-                            if gr_event == "Vendors":
+                            if gr_event == "All Vendors":
                                 sam_records_json_reports.all_vendors_report()
                             else:
                                 sam_records_json_reports.one_vendor_report(gr_event)
                             format_window.close()
                             break
 
+        if event == 'Delete Records':
+            sg.Popup("Coming in a Future Release")
+
 
 if __name__ == '__main__':
     main()
-

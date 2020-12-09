@@ -22,7 +22,7 @@ def create_connection(db_file):
 
 
 def all_vendors_report():
-    table = create_connection(db).cursor().execute("SELECT * FROM Vendors").fetchall()
+    table = create_connection(db).cursor().execute("SELECT * FROM Vendors")
     table_reformatted = [(f"id: {row[0]}",
                            f"Vendor: {row[1]}",
                            f"Serial Number: {row[2]}",
@@ -36,7 +36,7 @@ def all_vendors_report():
 
 
 def one_vendor_report(vendor):
-    table = create_connection(db).cursor().execute("SELECT * FROM Vendors WHERE Vendor = ?;", (vendor,)).fetchall()
+    table = create_connection(db).cursor().execute("SELECT * FROM Vendors WHERE Vendor = ?;", (vendor,))
     table_reformatted = [(f"id: {row[0]}",
                            f"Vendor: {row[1]}",
                            f"Serial Number: {row[2]}",

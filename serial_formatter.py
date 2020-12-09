@@ -3,9 +3,9 @@ import re
 #  RegEx search strings for certain software vendors
 oauth_sn = re.compile(r'\b(\d{3}-\d{8}\b)')
 oauth_key = re.compile(r'\b([a-zA-Z]|\d)\d([a-zA-Z]|\d)[a-zA-Z]\d\b')
-abalo_ex = re.compile(r'(\b(\d{4}-){5}\d{4}\b)')
+abalo_sn = re.compile(r'(\b(\d{4}-){5}\d{4}\b)')
 
-serial_number_restrictions = {'OAuthDex': oauth_sn, 'Abalobadiah': abalo_ex}
+serial_number_restrictions = {'OAuthDex': oauth_sn, 'Abalobadiah': abalo_sn}
 product_key_restrictions = {'OAuthDex': oauth_key}
 
 

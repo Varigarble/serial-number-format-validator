@@ -22,13 +22,13 @@ def create_connection(db_file):
 
 
 def all_vendors_report():
-    all_vendors_table = create_connection(db).cursor().execute("SELECT * FROM Vendors;").fetchall()
+    all_vendors_table = create_connection(db).cursor().execute("SELECT * FROM Vendors;")
     header = ['id', 'Vendor', 'Serial Number', 'Product Key']
-    all_vendors_row = [list(v) for v in all_vendors_table]
+    all_vendors_rows = [list(v) for v in all_vendors_table]
     with open(f"{folder}sam_vendors.csv", "w", newline='') as sr_csv:
         csv_writer = csv.writer(sr_csv, delimiter=' ')
         csv_writer.writerow(header)
-        csv_writer.writerows(all_vendors_row)
+        csv_writer.writerows(all_vendors_rows)
     subprocess.Popen([f"{folder}sam_vendors.csv"], shell=True)
 
 
