@@ -87,6 +87,8 @@ def main():
                     add_sn_window.Element('UPDATE').Update(sn_value['SELECTION'])
                 if sn_event == 'Go':
                     initial_sn = sg.popup_get_text("Enter Serial Number: ")
+                    if initial_sn is None:
+                        continue
                     for row in enumerated_sn_list:
                         # compare complete namedtuple rows to index values of selected gui rows:
                         if enumerated_sn_list.index(row) in add_sn_window.Element('SELECTION').metadata:
@@ -97,8 +99,9 @@ def main():
                                 while serial_formatter.sn_checker(row, try_sn) != row and try_sn is not None:
                                     try_sn = sg.popup_get_text(str(f"{try_sn} is not a valid serial number for "
                                                                     f"{row[1].Vendor}, Product Key: {row[1].Product_Key}"))
-                                row_sn_mod = row[1]._replace(Serial_Number=try_sn)  # enumeration discarded
-                                sn_set_out.add(row_sn_mod)
+                                if try_sn is not None:
+                                    row_sn_mod = row[1]._replace(Serial_Number=try_sn)  # enumeration discarded
+                                    sn_set_out.add(row_sn_mod)
                             else:
                                 if initial_sn == '':
                                     initial_sn = None  # not allowing empty strings as sns
@@ -134,6 +137,8 @@ def main():
                     add_pk_window.Element('UPDATE').Update(pk_value['SELECTION'])
                 if pk_event == 'Go':
                     initial_key = sg.popup_get_text("Enter Product Key: ")
+                    if initial_key is None:
+                        continue
                     for row in enumerated_pk_list:
                         # compare complete namedtuple rows to index values of selected gui rows:
                         if enumerated_pk_list.index(row) in add_pk_window.Element('SELECTION').metadata:
@@ -144,8 +149,9 @@ def main():
                                 while serial_formatter.pk_checker(row, try_key) != row and try_key is not None:
                                     try_key = sg.popup_get_text(str(f"{try_key} is not a valid product key for "
                                                                     f"{row[1].Vendor}, Serial Number: {row[1].Serial_Number}"))
-                                row_pk_mod = row[1]._replace(Product_Key=try_key)  # enumeration discarded
-                                pk_set_out.add(row_pk_mod)
+                                if try_key is not None:
+                                    row_pk_mod = row[1]._replace(Product_Key=try_key)  # enumeration discarded
+                                    pk_set_out.add(row_pk_mod)
                             else:
                                 if initial_key == '':
                                     initial_key = None  # not allowing empty strings as product keys
