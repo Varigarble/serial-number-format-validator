@@ -1,8 +1,12 @@
-# TODO: can change paths to files to .env values
-
 import json
 import sqlite3
-from sqlite3 import Error
+import subprocess
+from dotenv import load_dotenv
+from os import getenv
+
+load_dotenv()
+db = getenv('db_filepath')
+folder = getenv('folder')
 
 
 def create_connection(db_file):
@@ -11,86 +15,35 @@ def create_connection(db_file):
         connect = sqlite3.connect(db_file)
         print("connect success")
         return connect
-    except Error as e:
+    except sqlite3.Error as e:
         print("connect failure", e)
     finally:
         return connect
 
 
-conn = create_connection("sam_records.db")
-c = conn.cursor()
-c.execute("SELECT NAME from sqlite_master where type=='table'")
-all_tables = c.fetchall()
-
-
-def antidex_report():
-    c.execute("SELECT * FROM Antidex")
-    all_adx = c.fetchall()
-    json_dict = ({"Antidex:": all_adx})
-    adxr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\\antidex_records.json", "w",
-                     encoding="utf-8") # TODO: can change path to file to .env value
-    json.dump(json_dict, adxr_json, ensure_ascii=False, indent=4, separators=(',', ': '))
-    adxr_json.close()
-
-
-antidex_report()
-
-
-def abalobadiah_report():
-    c.execute("SELECT * FROM Abalobadiah")
-    all_abl = c.fetchall()
-    json_dict = ({"Abalobadiah:": all_abl})
-    ablr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\\abalobadiah_records.json", "w",
-                     encoding="utf-8")
-    json.dump(json_dict, ablr_json, ensure_ascii=False, indent=4, separators=(',', ': '))
-    ablr_json.close()
-
-
-abalobadiah_report()
-
-
-def none_report():
-    c.execute("SELECT * FROM None")
-    all_none = c.fetchall()
-    json_dict = ({"None:": all_none})
-    noner_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\\none_records.json", "w",
-                      encoding="utf-8")
-    json.dump(json_dict, noner_json, ensure_ascii=False, indent=4, separators=(',', ': '))
-    noner_json.close()
-
-
-none_report()
-
-
 def all_vendors_report():
-    tables_reformatted = [table[0] for table in all_tables]
-    json_dict = ({"Software Vendors:": tables_reformatted})
-    sv_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\sam_vendors.json", "w",
-                   encoding="utf-8")
+    table = create_connection(db).cursor().execute("SELECT * FROM Vendors")
+    table_reformatted = [(f"id: {row[0]}",
+                           f"Vendor: {row[1]}",
+                           f"Serial Number: {row[2]}",
+                           f"Product Key: {row[3]}")
+                          for row in table]
+    json_dict = ({"Software Vendors": table_reformatted})
+    av_json = open(f"{folder}sam_vendors.json", "w", encoding="utf-8")
+    json.dump(json_dict, av_json, ensure_ascii=False, indent=4, separators=(',', ': '))
+    av_json.close()
+    subprocess.Popen([f"{folder}sam_vendors.json"], shell=True)
+
+
+def one_vendor_report(vendor):
+    table = create_connection(db).cursor().execute("SELECT * FROM Vendors WHERE Vendor = ?;", (vendor,))
+    table_reformatted = [(f"id: {row[0]}",
+                           f"Vendor: {row[1]}",
+                           f"Serial Number: {row[2]}",
+                           f"Product Key: {row[3]}")
+                          for row in table]
+    json_dict = ({f"{vendor}": table_reformatted})
+    sv_json = open(f"{folder}{vendor}.json", "w", encoding="utf-8")
     json.dump(json_dict, sv_json, ensure_ascii=False, indent=4, separators=(',', ': '))
     sv_json.close()
-
-
-all_vendors_report()
-
-
-def all_records_report():
-    global all_tables
-    dicts_data = {}
-    i = 1
-    for table in all_tables[1:]:
-        curr_table = all_tables[i][0]
-        c.execute("SELECT * FROM " + curr_table)
-        all_curr_data = c.fetchall()
-        dicts_data[curr_table] = all_curr_data
-        i += 1
-    json_dict = (dicts_data)
-    sr_json = open("C:\\Users\Ghuleh\Documents\GitHub\serial-number-format-validator\sam_records.json", "w",
-                   encoding="utf-8")
-    json.dump(json_dict, sr_json, ensure_ascii=False, indent=4, separators=(',', ': '))
-    sr_json.close()
-
-
-all_records_report()
-
-conn.close()
+    subprocess.Popen([f"{folder}{vendor}.json"], shell=True)
