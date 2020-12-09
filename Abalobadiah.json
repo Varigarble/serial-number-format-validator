@@ -1,16 +1,12 @@
 {
-    "Abalobadiah": [
-        {
-            "id": "3",
-            "Vendor": "Abalobadiah",
+    "Abalobadiah": {
+        "3": {
             "Serial Number": "1111-2222-3333-4444-5555-6666",
             "Product Key": "4x6"
         },
-        {
-            "id": "4",
-            "Vendor": "Abalobadiah",
+        "4": {
             "Serial Number": "1234-5678-9012-3456-7890-1234",
             "Product Key": "None"
         }
-    ]
+    }
 }
