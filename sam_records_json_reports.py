@@ -23,12 +23,12 @@ def create_connection(db_file):
 
 def all_vendors_report():
     table = create_connection(db).cursor().execute("SELECT * FROM Vendors")
-    table_reformatted = [(f"id: {row[0]}",
-                           f"Vendor: {row[1]}",
-                           f"Serial Number: {row[2]}",
-                           f"Product Key: {row[3]}")
-                          for row in table]
-    json_dict = ({"Software Vendors": table_reformatted})
+    table_reformatted = [{"id": f"{row[0]}",
+                           "Vendor": f"{row[1]}",
+                           "Serial Number": f"{row[2]}",
+                           "Product Key": f"{row[3]}"}
+                         for row in table]
+    json_dict = {"Software Vendors": table_reformatted}
     av_json = open(f"{folder}sam_vendors.json", "w", encoding="utf-8")
     json.dump(json_dict, av_json, ensure_ascii=False, indent=4, separators=(',', ': '))
     av_json.close()
@@ -37,12 +37,12 @@ def all_vendors_report():
 
 def one_vendor_report(vendor):
     table = create_connection(db).cursor().execute("SELECT * FROM Vendors WHERE Vendor = ?;", (vendor,))
-    table_reformatted = [(f"id: {row[0]}",
-                           f"Vendor: {row[1]}",
-                           f"Serial Number: {row[2]}",
-                           f"Product Key: {row[3]}")
-                          for row in table]
-    json_dict = ({f"{vendor}": table_reformatted})
+    table_reformatted = [{"id": f"{row[0]}",
+                           "Vendor": f"{row[1]}",
+                           "Serial Number": f"{row[2]}",
+                           "Product Key": f"{row[3]}"}
+                         for row in table]
+    json_dict = {f"{vendor}": table_reformatted}
     sv_json = open(f"{folder}{vendor}.json", "w", encoding="utf-8")
     json.dump(json_dict, sv_json, ensure_ascii=False, indent=4, separators=(',', ': '))
     sv_json.close()
