@@ -1,4 +1,4 @@
-# Asset Management data entry format checker with gui
+# Asset Management database with gui and input format restrictions
 
 #### What it is:
 
@@ -28,14 +28,36 @@ ever existed or will exist. There are ideas in here, particularly some neat PySi
 into other projects.
 
 ![add software vendor](https://raw.githubusercontent.com/Varigarble/serial-number-format-validator/master/1_163504.JPG?raw=True)
+
+Application gui with with DB Browser for SQLite in the background.
+___
 ![add serial number](https://github.com/Varigarble/serial-number-format-validator/blob/master/2_164537.JPG)
+
+Serial numbers and product keys that don't match defined formats will prompt re-entry.
+___
 ![add product key](https://github.com/Varigarble/serial-number-format-validator/blob/master/3_171649.JPG)
+
+A detailed explanation of handling displayed data and hidden data is in my repository ![PySimpleGUI hidden metadata example](https://github.com/Varigarble/pysimplegui_hidden_metadata)
+___
 ![update software vendor](https://github.com/Varigarble/serial-number-format-validator/blob/master/4_165743.JPG)
+
+Button width is set to the longest vendor name.
+___
 ![update product key](https://github.com/Varigarble/serial-number-format-validator/blob/master/6_170031.JPG)
+
+Listbox width is set to the longest row of displayed data.
+___
 ![view vendor list](https://github.com/Varigarble/serial-number-format-validator/blob/master/7_170255.JPG)
+
+Listbox height is set to the length of the list of vendors with a maximum length of 20.
+___
 ![get reports](https://github.com/Varigarble/serial-number-format-validator/blob/master/8_163820.JPG)
+
+The maximum number of buttons in a row is 9.
+___
 
 #### Known issues:
 
 - Individual vendor report file names incorporate vendor names. The file creation process may fail if there are special
-characters in the vendor's name.
+characters in the vendor's name. Avoid using special characters, especially backslashes.
+- There is no method to delete data, but cells can be over-written with empty strings except where format validation is enforced. Edit database directly in another application.
