@@ -27,6 +27,14 @@ It's also not possible to write regular expressions for every product code for e
 ever existed or will exist. There are ideas in here, particularly some neat PySimpleGUI tricks, that can be incorporated
 into other projects.
 
+![add software vendor](https://raw.githubusercontent.com/Varigarble/serial-number-format-validator/master/1_163504.JPG?raw=True)
+![add serial number](https://github.com/Varigarble/serial-number-format-validator/blob/master/2_164537.JPG)
+![add product key](https://github.com/Varigarble/serial-number-format-validator/blob/master/3_171649.JPG)
+![update software vendor](https://github.com/Varigarble/serial-number-format-validator/blob/master/4_165743.JPG)
+![update product key](https://github.com/Varigarble/serial-number-format-validator/blob/master/6_170031.JPG)
+![view vendor list](https://github.com/Varigarble/serial-number-format-validator/blob/master/7_170255.JPG)
+![get reports](https://github.com/Varigarble/serial-number-format-validator/blob/master/8_163820.JPG)
+
 #### Known issues:
 
 - Individual vendor report file names incorporate vendor names. The file creation process may fail if there are special
