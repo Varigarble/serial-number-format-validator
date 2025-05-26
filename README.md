@@ -24,7 +24,7 @@ before it ever enters the SAM system.
 This project is currently in a demonstration/proof-of-concept phase. There is only one database table with four columns.
 A more complete SAM application might have a system of checking licenses in and out to employees.
 It's also not possible to write regular expressions for every product code for every product line for every vendor that's 
-ever existed or will exist. There are ideas in here, particularly some neat PySimpleGUI tricks, that can be incorporated
+ever existed or will exist. There are ideas in here, particularly some neat ~~PySimpleGUI~~ FreeSimpleGUI tricks, that can be incorporated
 into other projects.
 
 ![add software vendor](https://raw.githubusercontent.com/Varigarble/serial-number-format-validator/master/1_163504.JPG?raw=True)

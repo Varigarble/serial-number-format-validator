@@ -1,4 +1,4 @@
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 import sam_db
 import serial_formatter
 import sam_records_csv_reports
